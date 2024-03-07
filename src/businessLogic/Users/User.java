@@ -8,6 +8,22 @@ public class User {
     this.name=name;
     this.pw=pw;
   }
+   //mutators and accessors
+  public String getName{
+    return name;
+  }
+
+  public String getPW(){
+    return pw;
+  }
+
+  public setName(String name){
+    this.name=name;
+  }
+
+  public setPW(String pw){
+    this.pw=pw;
+  }
 
   
 }
