@@ -17,11 +17,11 @@ public class User {
     return pw;
   }
 
-  public setName(String name){
+  public void setName(String name){
     this.name=name;
   }
 
-  public setPW(String pw){
+  public void setPW(String pw){
     this.pw=pw;
   }
 
