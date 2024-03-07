@@ -18,6 +18,7 @@ public class Faculty extends User {
   
 }
 
+//Implementing builder pattern
 public static class FacBuilder{
 
   
