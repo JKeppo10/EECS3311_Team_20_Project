@@ -6,14 +6,6 @@ public class Faculty extends User {
     super(name, pw);
   }
 
-  //mutators and accessors
-  public String getName{
-    return name;
-  }
-
-  public String getPW(){
-    return pw;
-  }
 
   
 }
