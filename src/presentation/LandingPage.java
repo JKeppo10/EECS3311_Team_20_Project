@@ -1,3 +1,5 @@
+package presentation;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -15,20 +17,6 @@ import java.net.URL;
 import java.awt.event.ActionEvent;
 
 public class LandingPage{
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   
 }

@@ -1,26 +1,27 @@
 package businessLogic.Users;
 
 public class User {
-	
+
 	private String name;
 	private String pw;
 	private String email;
 	private Integer id;
-	
-	//Empty constructor
+	private String type;
+	private UserTypes userType;
+
+	// Empty constructor
 	public User() {
-		this.name = null;
-		this.id = null;
-		this.email = null;
-		this.pw = null;
+
 	}
-	
+
 	// basic constructor
-	public User(String name, Integer id, String pw, String email) {
+	public User(String name, String pw, Integer id, String email, UserTypes usertype) {
 		this.name = name;
 		this.id = id;
 		this.pw = pw;
 		this.email = email;
+		this.userType = usertype;
+
 	}
 
 	// mutators and accessors
@@ -54,5 +55,13 @@ public class User {
 
 	public void setId(Integer integer) {
 		this.id = integer;
+	}
+
+	public UserTypes getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserTypes userType) {
+		this.userType = userType;
 	}
 }

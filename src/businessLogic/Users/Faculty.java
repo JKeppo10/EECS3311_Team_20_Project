@@ -1,39 +1,42 @@
 package businessLogic.Users;
 
 public class Faculty extends User {
-private int fID;
-  //simple constructor with super(), keep private for builder pattern to function correctly
- Faculty(String name, String pw){
-    super(name, pw);
-    this.fID=fID;
-  }
+    private Faculty(String name, String pw, Integer id, String email, UserTypes userType) {
+        super(name, pw, id, email, userType);
+    }
 
+    // Inner builder class
+    public static class Builder {
+        private String name;
+        private String pw;
+        private String email;
+        private int id;
 
-  
-}
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
 
-//Implementing builder pattern
-public class FacBuilder{
-  private String name;
-  private String pw;
-  private int fID;
+        public Builder pw(String pw) {
+            this.pw = pw;
+            return this;
+        }
 
-  //builder setters
-  public FacBuilder name(String name){
-    this.name=name;
-  }
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
 
-  public FacBuilder pw(String pw){
-    this.pw=pw;
-  }
+        public Builder id(int id) {
+            this.id = id;
+            return this;
+        }
 
-  public FacBuilder fID(int fID){
-    this.fID=fID;
-  }
+        public Faculty build() {
+            // Assuming UserTypes.FACULTY is defined
+            return new Faculty(name, pw, id, email, UserTypes.FACULTY);
+        }
+    }
 
-  //build method
-  public Faculty build(){
-    return new Faculty(name, pw, fID);
-  }
-  
+    // Any additional methods specific to the Faculty class can be added here
 }
