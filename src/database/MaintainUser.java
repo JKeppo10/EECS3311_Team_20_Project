@@ -10,6 +10,7 @@ import businessLogic.Users.User;
 import businessLogic.Users.UserTypes;
 
 public class MaintainUser {
+	
     public ArrayList<User> users = new ArrayList<User>();
     public String path;
 
@@ -56,6 +57,24 @@ public class MaintainUser {
             e.printStackTrace();
         }
     }
+    
+	public String addUser(User newUser) {
+        if (emailExists(newUser.getEmail())) {
+            return "A user with this email already exists.";
+        } else {
+            users.add(newUser);
+            return "New user added successfully.";
+        }
+	}
+
+	private boolean emailExists(String email) {
+		for (User user : users) {
+			if (user.getEmail().equalsIgnoreCase(email)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
     public static void main(String[] args) throws Exception {
         String path = "C:\\Users\\keppo\\git\\EECS3311_Team_20_Project\\CSVs\\user.csv";
@@ -63,13 +82,15 @@ public class MaintainUser {
 
         maintain.load(path);
         for (User u : maintain.users) {
-            System.out.println(u.toString());
+            System.out.println(u.getName());
         }
 
-        // Assuming you have a UserType enum with values: FACULTY, STUDENT, NONFACULTY
+        // Assuming you have a UserType enum with values: FACULTY, STUDENT, NON_FACULTY
         User newUser = new User("t4", "t4t4", 4, "t4@yorku.ca", UserTypes.FACULTY);
-        maintain.users.add(newUser);
-
+        
+        String result = maintain.addUser(newUser);
+        System.out.println(result);
+        
         maintain.update(path);
     }
 }
