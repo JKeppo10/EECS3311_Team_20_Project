@@ -96,6 +96,7 @@ public class LoginPage {
         // Set frame visibility
         frame.setVisible(true);
         
+        //check 
         logInButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = userNameField.getText();
@@ -108,6 +109,11 @@ public class LoginPage {
                     for (User user : maintainUser.users) {
                         if (user.getName().equalsIgnoreCase(username) && user.getPW().equals(password)) {
                             JOptionPane.showMessageDialog(null, "Login Successful!");
+                            // Open LandingPage upon successful login
+                            new LandingPage();
+                            // Close the current login frame
+                            JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(userNameField);
+                            loginFrame.dispose();
                             return;
                         }
                     }
@@ -117,7 +123,7 @@ public class LoginPage {
                 }
             }
         });
-    }
+}
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

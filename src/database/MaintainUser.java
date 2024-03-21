@@ -13,41 +13,45 @@ public class MaintainUser {
 	
     public ArrayList<User> users = new ArrayList<User>();
     private static final String path = "C:\\Users\\keppo\\git\\EECS3311_Team_20_Project\\CSVs\\user.csv";
-
+    private int idCounter;
+    
     public void load() throws Exception {
         CsvReader reader = new CsvReader(path);
         reader.readHeaders();
+
+        int maxId = 0;
 
         while (reader.readRecord()) {
             User user = new User();
             // name,id,email,password
             user.setName(reader.get("name"));
+            user.setPW(reader.get("password"));
             user.setId(Integer.valueOf(reader.get("id")));
             user.setEmail(reader.get("email"));
-            user.setPW(reader.get("password"));
             user.setUserType(UserTypes.valueOf(reader.get("type"))); // Set user type
             users.add(user);
         }
+        initializeIdCounter();
     }
+
 
     public void update(String path) throws Exception {
         try {
             CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
-            // name,id,email,password,type
+            // name,password,id,email,type
             csvOutput.write("name");
+            csvOutput.write("password");
             csvOutput.write("id");
             csvOutput.write("email");
-            csvOutput.write("password");
             csvOutput.write("type");
             csvOutput.endRecord();
 
-            // else assume that the file already has the correct header line
-            // write out a few records
+            // Write out the records
             for (User u : users) {
                 csvOutput.write(u.getName());
+                csvOutput.write(u.getPW());
                 csvOutput.write(String.valueOf(u.getId()));
                 csvOutput.write(u.getEmail());
-                csvOutput.write(u.getPW());
                 csvOutput.write(u.getUserType().toString()); // Write user type
                 csvOutput.endRecord();
             }
@@ -58,23 +62,25 @@ public class MaintainUser {
         }
     }
     
-	public String addUser(User newUser) {
+    public String addUser(User newUser) {
         if (emailExists(newUser.getEmail())) {
             return "A user with this email already exists.";
         } 
         if (usernameExists(newUser.getName())){
-        	return "A user with this name already exists.";
-		} else {
-			users.add(newUser);
-			try {
-				update(path);
-				return "New user added successfully.";
-			} catch (Exception e) {
-				e.printStackTrace();
-				return "Error occurred while updating the CSV file.";
-			}  
+            return "A user with this name already exists.";
+        } else {
+            // Set the ID for the new user
+            newUser.setId(idCounter++);
+            users.add(newUser);
+            try {
+                update(path);
+                return "New user added successfully.";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "Error occurred while updating the CSV file.";
+            }  
         }
-	}
+    }
 	
 	private boolean usernameExists(String username) {
 		for (User user : users) {
@@ -115,7 +121,18 @@ public class MaintainUser {
 	        return "User not found.";
 	    }
 	}
-
+	
+	private void initializeIdCounter() {
+	    int maxId = 0;
+	    for (User user : users) {
+	        if (user.getId() > maxId) {
+	            maxId = user.getId();
+	        }
+	    }
+	    idCounter = users.isEmpty() ? 1 : maxId + 1;
+	}
+	
+	//tests8
     public static void main(String[] args) throws Exception {
         MaintainUser maintain = new MaintainUser();
 
@@ -125,7 +142,7 @@ public class MaintainUser {
         }
 
         // Assuming you have a UserType enum with values: FACULTY, STUDENT, NON_FACULTY
-        User newUser = new User("t4", "t4t4", 4, "t4@yorku.ca", UserTypes.FACULTY);
+        User newUser = new User("t5", "t5t5", "t5@yorku.ca", UserTypes.STUDENT);
         
         String addResult = maintain.addUser(newUser);
         System.out.println(addResult);
