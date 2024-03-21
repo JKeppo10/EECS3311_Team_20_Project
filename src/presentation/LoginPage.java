@@ -109,7 +109,7 @@ public class LoginPage {
                     for (User user : maintainUser.users) {
                         if (user.getName().equalsIgnoreCase(username) && user.getPW().equals(password)) {
                             // Open LandingPage with user type upon successful login
-                            new LandingPage(user.getUserType());
+                            new LandingPage(user);
                             // Close the current login frame
                             JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(userNameField);
                             loginFrame.dispose();

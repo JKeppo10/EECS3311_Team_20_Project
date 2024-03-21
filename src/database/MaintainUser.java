@@ -12,7 +12,7 @@ import businessLogic.Users.UserTypes;
 public class MaintainUser {
 
 	public ArrayList<User> users = new ArrayList<User>();
-	private static final String path = "C:\\Users\\keppo\\git\\EECS3311_Team_20_Project\\CSVs\\user.csv";
+	private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\user.csv";
 	private int idCounter;
 
 	public void load() throws Exception {

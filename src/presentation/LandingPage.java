@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
@@ -24,9 +25,11 @@ import presentation.*;
 public class LandingPage {
 
     private UserTypes userType;
+    private User currentUser;
 
-    public LandingPage(UserTypes userType) {
-        this.userType = userType;
+    public LandingPage(User user) {
+    	this.currentUser = user;
+        this.userType = user.getUserType();
 
         // Initialize the frame
         JFrame frame = new JFrame("Landing Page");
@@ -35,13 +38,13 @@ public class LandingPage {
         frame.setResizable(false);
 
         // Customize LandingPage based on user type
-        customizeLandingPage(frame);
+        customizeLandingPage(frame, currentUser);
 
         // Set frame visibility
         frame.setVisible(true);
     }
 
-    private void customizeLandingPage(JFrame frame) {
+    private void customizeLandingPage(JFrame frame, User currentUser) {
         JPanel panel = new JPanel();
         panel.setLayout(null); // Using absolute layout
 
@@ -51,6 +54,66 @@ public class LandingPage {
         welcomeLabel.setBounds(50, 20, 300, 30);
         panel.add(welcomeLabel);
 
+        //user's account info
+        JLabel currentUserInfoLabel = new JLabel("Your Account Information");
+        currentUserInfoLabel.setBounds(100, 40, 160, 25);
+        panel.add(currentUserInfoLabel);
+        
+        // Username label and field
+        JLabel usernameLabel = new JLabel("Username: ");
+        usernameLabel.setBounds(10, 60, 80, 25);
+        panel.add(usernameLabel);
+        
+        JLabel currentUsernameLabel = new JLabel(currentUser.getName());
+        currentUsernameLabel.setBounds(100, 60, 160, 25);
+        panel.add(currentUsernameLabel);
+
+        // Password label and field
+        JLabel passwordLabel = new JLabel("Password: ");
+        passwordLabel.setBounds(10, 90, 80, 25);
+        panel.add(passwordLabel);
+
+        JPasswordField passwordField = new JPasswordField(currentUser.getPW());
+        passwordField.setBounds(100, 90, 130, 25);
+        passwordField.setEditable(false);
+        panel.add(passwordField);
+
+        // Toggle button for password visibility
+        JToggleButton showPasswordButton = new JToggleButton("Show");
+        showPasswordButton.setBounds(235, 90, 70, 25);
+        panel.add(showPasswordButton);
+        showPasswordButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordButton.isSelected()) {
+                    passwordField.setEchoChar((char) 0); // Password will be visible
+                    showPasswordButton.setText("Hide");
+                } else {
+                    passwordField.setEchoChar('•'); // Password will be masked
+                    showPasswordButton.setText("Show");
+                }
+            }
+        });
+
+        // Email label
+        JLabel emailLabel = new JLabel("Email: ");
+        emailLabel.setBounds(10, 120, 80, 25);
+        panel.add(emailLabel);
+        
+        // User's email label
+        JLabel userEmailLabel = new JLabel(currentUser.getEmail());
+        userEmailLabel.setBounds(100, 120, 160, 25);
+        panel.add(userEmailLabel);
+
+        // ID label and field
+        JLabel idLabel = new JLabel("ID: ");
+        idLabel.setBounds(10, 150, 80, 25);
+        panel.add(idLabel);
+
+        JLabel userIdLabel = new JLabel(String.valueOf(currentUser.getId()));
+        userIdLabel.setBounds(100, 150, 160, 25);
+        panel.add(userIdLabel);
+        
+        
         // Add components based on user type
         switch (userType) {
             case FACULTY:
@@ -72,32 +135,23 @@ public class LandingPage {
     }
 
     private void addFacultyFeatures(JPanel panel) {
-        // Add components specific to FACULTY user type
-        // Example: JButton, JLabel, etc.
+
     }
 
     private void addNonFacultyFeatures(JPanel panel) {
-        // Add components specific to NON_FACULTY user type
-        // Example: JButton, JLabel, etc.
+
     }
 
     private void addStudentFeatures(JPanel panel) {
-        // Add components specific to STUDENT user type
-        // Example: JButton, JLabel, etc.
+
     }
 
     private void addGuestFeatures(JPanel panel) {
-        // Add components specific to GUEST user type
-        // Example: JButton, JLabel, etc.
+
     }
 
-    public static void main(String[] args) {
-        // Simulate login with user type
-        UserTypes userType = UserTypes.FACULTY; // Change to actual user type after login
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new LandingPage(userType);
-            }
-        });
-    }
+	/* testing
+	 * public static void main(String[] args) { SwingUtilities.invokeLater(new
+	 * Runnable() { public void run() { new LandingPage(user); } }); }
+	 */
 }
