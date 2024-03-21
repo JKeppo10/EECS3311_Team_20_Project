@@ -19,8 +19,10 @@ import java.net.URL;
 import java.awt.event.ActionEvent;
 
 import database.*;
-import businessLogic.Users.*;
 import presentation.*;
+import businessLogic.Users.*;
+import businessLogic.Items.*;
+import businessLogic.Misc.*;
 
 public class LandingPage {
 
@@ -34,7 +36,7 @@ public class LandingPage {
         // Initialize the frame
         JFrame frame = new JFrame("Landing Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(600, 400);
         frame.setResizable(false);
 
         // Customize LandingPage based on user type
@@ -43,6 +45,7 @@ public class LandingPage {
         // Set frame visibility
         frame.setVisible(true);
     }
+    
 
     private void customizeLandingPage(JFrame frame, User currentUser) {
         JPanel panel = new JPanel();
@@ -121,6 +124,22 @@ public class LandingPage {
         currentUserTypeLabel.setBounds(100, 180, 160, 25);
         panel.add(currentUserTypeLabel);
         
+        // Sign out button
+        JButton signOutButton = new JButton("Sign Out");
+        signOutButton.setBounds((frame.getWidth() - 100) / 2, frame.getHeight() - 80, 100, 30);
+        panel.add(signOutButton);
+        
+        // Add action listener to the signout button
+        signOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Open the LoginPage
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(panel);
+                frame.dispose(); // Close the LandingPage
+                new LoginPage(); // Open the LoginPage
+            }
+        });
+        
         
         // Add components based on user type
         switch (userType) {
@@ -143,7 +162,28 @@ public class LandingPage {
     }
 
     private void addFacultyFeatures(JPanel panel) {
+    	
+        // Faculty features label and field
+        JLabel usernameLabel = new JLabel("Features");
+        usernameLabel.setBounds(460, 40, 80, 25);
+        panel.add(usernameLabel);
+        // Create a button to open the CoursePage
+        JButton courseButton = new JButton("Manage Courses");
+        courseButton.setBounds(400, 60, 160, 30);
+        panel.add(courseButton);
 
+        // Add action listener to the course button
+        courseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openCoursePage();
+            }
+        });
+    }
+
+    // Method to open the CoursePage
+    private void openCoursePage() {
+        new CoursePage();
     }
 
     private void addNonFacultyFeatures(JPanel panel) {

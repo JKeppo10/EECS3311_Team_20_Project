@@ -49,6 +49,10 @@ public class MaintainCourses {
         }
     }
     
+    public ArrayList<Course> getCourses(){
+    	return courses;
+    }
+    
     public void addCourse(Course newCourse) throws Exception {
         // Check if the course code already exists
         boolean courseExists = courses.stream().anyMatch(course -> course.getCourseCode().equals(newCourse.getCourseCode()));

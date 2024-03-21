@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.awt.event.ActionEvent;
@@ -23,112 +24,127 @@ import presentation.*;
 
 public class LoginPage {
 
-    private JPanel loginPanel;
+	private JFrame loginFrame; // Reference to the login frame
 
-    private JLabel logoLabel;
-    private JLabel userNameLabel;
-    private JLabel passwordLabel;
-    private JTextField userNameField;
-    private JPasswordField passwordField;
+	private JPanel loginPanel;
 
-    private JButton logInButton;
-    private JButton signUpButton;
+	private JLabel logoLabel;
+	private JLabel userNameLabel;
+	private JLabel passwordLabel;
+	private JTextField userNameField;
+	private JPasswordField passwordField;
 
-    public LoginPage() {
-    	// Initialize the frame
-        JFrame frame = new JFrame("Login Page");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setResizable(false);
+	private JButton logInButton;
+	private JButton signUpButton;
 
-        // Initialize the login panel
-        loginPanel = new JPanel();
-        loginPanel.setLayout(null); // Using absolute layout
+	public LoginPage() {
+		// Close all existing frames before opening the login page
+		closeAllFrames();
 
-        // Logo label
-        logoLabel = new JLabel("Your Logo");
-        logoLabel.setBounds(150, 20, 100, 100); // Set bounds (x, y, width, height)
-        loginPanel.add(logoLabel);
+		// Initialize the frame
+		loginFrame = new JFrame("Login Page");
+		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		loginFrame.setSize(400, 300);
+		loginFrame.setResizable(false);
 
-        // Username label and field
-        userNameLabel = new JLabel("Username:");
-        userNameLabel.setBounds(50, 120, 80, 25);
-        loginPanel.add(userNameLabel);
+		// Initialize the login panel
+		loginPanel = new JPanel();
+		loginPanel.setLayout(null); // Using absolute layout
 
-        userNameField = new JTextField();
-        userNameField.setBounds(140, 120, 200, 25);
-        loginPanel.add(userNameField);
+		// Logo label
+		logoLabel = new JLabel("Your Logo");
+		logoLabel.setBounds(150, 20, 100, 100); // Set bounds (x, y, width, height)
+		loginPanel.add(logoLabel);
 
-        // Password label and field
-        passwordLabel = new JLabel("Password:");
-        passwordLabel.setBounds(50, 150, 80, 25);
-        loginPanel.add(passwordLabel);
+		// Username label and field
+		userNameLabel = new JLabel("Username:");
+		userNameLabel.setBounds(50, 120, 80, 25);
+		loginPanel.add(userNameLabel);
 
-        passwordField = new JPasswordField();
-        passwordField.setBounds(140, 150, 200, 25);
-        loginPanel.add(passwordField);
+		userNameField = new JTextField();
+		userNameField.setBounds(140, 120, 200, 25);
+		loginPanel.add(userNameField);
 
-        // Login button
-        logInButton = new JButton("Login");
-        logInButton.setBounds(140, 190, 100, 30);
-        loginPanel.add(logInButton);
+		// Password label and field
+		passwordLabel = new JLabel("Password:");
+		passwordLabel.setBounds(50, 150, 80, 25);
+		loginPanel.add(passwordLabel);
 
-        // Sign up button
-        signUpButton = new JButton("Sign Up");
-        signUpButton.setBounds(250, 190, 100, 30);
-        loginPanel.add(signUpButton);
-        
-        // Add signup button listener
-        signUpButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Dispose the current login frame
-                JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor((JButton) e.getSource());
-                loginFrame.dispose();
-                
-                // Open the SignUpPage
-                new SignUpPage();
-            }
-        });
+		passwordField = new JPasswordField();
+		passwordField.setBounds(140, 150, 200, 25);
+		loginPanel.add(passwordField);
 
-        // Add login panel to the frame
-        frame.add(loginPanel);
+		// Login button
+		logInButton = new JButton("Login");
+		logInButton.setBounds(140, 190, 100, 30);
+		loginPanel.add(logInButton);
 
-        // Set frame visibility
-        frame.setVisible(true);
-        
-      //check 
-        logInButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String username = userNameField.getText();
-                String password = new String(passwordField.getPassword());
+		// Sign up button
+		signUpButton = new JButton("Sign Up");
+		signUpButton.setBounds(250, 190, 100, 30);
+		loginPanel.add(signUpButton);
 
-                // Check credentials
-                MaintainUser maintainUser = new MaintainUser();
-                try {
-                    maintainUser.load();
-                    for (User user : maintainUser.users) {
-                        if (user.getName().equalsIgnoreCase(username) && user.getPW().equals(password)) {
-                            // Open LandingPage with user type upon successful login
-                            new LandingPage(user);
-                            // Close the current login frame
-                            JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(userNameField);
-                            loginFrame.dispose();
-                            return;
-                        }
-                    }
-                    JOptionPane.showMessageDialog(null, "Invalid username or password.");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Error loading user data: " + ex.getMessage());
-                }
-            }
-        });
-}
+		// Add signup button listener
+		signUpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Dispose the current login frame
+				loginFrame.dispose();
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new LoginPage();
-            }
-        });
-    }
+				// Open the SignUpPage
+				new SignUpPage();
+			}
+		});
+
+		// Add login panel to the frame
+		loginFrame.add(loginPanel);
+
+		// Set frame visibility
+		loginFrame.setVisible(true);
+
+		// Check login credentials when login button is clicked
+		logInButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String username = userNameField.getText();
+				String password = new String(passwordField.getPassword());
+
+				// Check credentials
+				MaintainUser maintainUser = new MaintainUser();
+				try {
+					maintainUser.load();
+					for (User user : maintainUser.users) {
+						if (user.getName().equalsIgnoreCase(username) && user.getPW().equals(password)) {
+							// Open LandingPage with user type upon successful login
+							new LandingPage(user);
+							// Close the current login frame
+							loginFrame.dispose();
+							return;
+						}
+					}
+					JOptionPane.showMessageDialog(null, "Invalid username or password.");
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Error loading user data: " + ex.getMessage());
+				}
+			}
+		});
+	}
+
+	// Method to close all frames except the login frame
+	private static void closeAllFrames() {
+	    Frame[] frames = Frame.getFrames();
+	    for (Frame frame : frames) {
+	        if (frame instanceof JFrame) {
+	            frame.dispose();
+	        }
+	    }
+	}
+
+	public static void main(String[] args) {
+	    SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	            // Close all other frames before opening a new LoginPage
+	            closeAllFrames();
+	            new LoginPage();
+	        }
+	    });
+	}
 }
