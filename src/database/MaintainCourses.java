@@ -7,6 +7,8 @@ import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
 import businessLogic.Misc.Course;
+import businessLogic.Users.User;
+import businessLogic.Users.UserTypes;
 
 public class MaintainCourses {
 	
@@ -21,7 +23,7 @@ public class MaintainCourses {
             String courseCode = reader.get("coursecode");
             String courseName = reader.get("coursename");
             String professor = reader.get("professor");
-            String email = reader.get("email");
+            String email = reader.get("email"); 
             String location = reader.get("location");
 
             Course course = new Course(courseCode, courseName, professor, email, location);
@@ -32,13 +34,17 @@ public class MaintainCourses {
     public void update() throws Exception {
         CsvWriter writer = null;
         try {
-            writer = new CsvWriter(new FileWriter(path), ',');
+            writer = new CsvWriter(new FileWriter(path), ','); // Set append mode to false
+
+            // Write headers
             writer.writeRecord(new String[]{"coursecode", "coursename", "professor", "email", "location"});
+
+            // Write course data
             for (Course course : courses) {
                 writer.write(course.getCourseCode());
                 writer.write(course.getCourseName());
                 writer.write(course.getProfessor());
-                writer.write(course.getEmail());
+                writer.write(course.getEmail()); // Ensure email field is written
                 writer.write(course.getLocation());
                 writer.endRecord();
             }
@@ -53,26 +59,53 @@ public class MaintainCourses {
     	return courses;
     }
     
-    public void addCourse(Course newCourse) throws Exception {
+    public String addCourse(Course newCourse) throws Exception {
         // Check if the course code already exists
         boolean courseExists = courses.stream().anyMatch(course -> course.getCourseCode().equals(newCourse.getCourseCode()));
         if (!courseExists) {
             courses.add(newCourse);
             update();
-            System.out.println("Course added successfully.");
+            return "Course added successfully.";
         } else {
-            System.out.println("Course with the same course code already exists. Could not add.");
+        	return "Course with the same course code already exists. Could not add.";
         }
     }
 
-    public void removeCourse(String courseCode) throws Exception {
+    public String removeCourse(String courseCode) throws Exception {
         // Check if the course exists
-        boolean courseFound = courses.removeIf(course -> course.getCourseCode().equals(courseCode));
-        if (courseFound) {
-            update();
-            System.out.println("Course removed successfully.");
+        Course courseToRemove = null;
+        for (Course course : courses) {
+            if (course.getCourseCode().equals(courseCode)) {
+                courseToRemove = course;
+                break;
+            }
+        }
+
+        if (courseToRemove != null) {
+            courses.remove(courseToRemove);
+            update(); // Update the CSV file
+            return "Course removed successfully.";
         } else {
-            System.out.println("Course with the provided course code does not exist. Could not remove.");
+            return "Course with the provided course code does not exist.";
         }
     }
+    
+	/*
+	 * // tests8 public static void main(String[] args) throws Exception {
+	 * MaintainCourses maintain = new MaintainCourses();
+	 * 
+	 * maintain.load(); for (Course c : maintain.courses) {
+	 * System.out.println(c.getCourseName()); }
+	 * 
+	 * Course newCourse = new Course("a", "b", "c", "d", "e");
+	 * 
+	 * String addResult = maintain.addCourse(newCourse);
+	 * System.out.println(addResult);
+	 * 
+	 * 
+	 * String removeResult = maintain.removeCourse("a");
+	 * System.out.println(removeResult);
+	 * 
+	 * // maintain.update(path); }
+	 */
 }

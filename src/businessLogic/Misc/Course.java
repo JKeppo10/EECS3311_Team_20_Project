@@ -8,7 +8,7 @@ public class Course {
 	private String email;
 	private String location;
 	
-	public Course(String coursecode, String coursename, String professor, String eamil, String locationCode) {
+	public Course(String coursecode, String coursename, String professor, String email, String locationCode) {
 		this.courseCode = coursecode;
 		this.courseName = coursename;
 		this.professor = professor;
