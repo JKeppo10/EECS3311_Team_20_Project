@@ -113,6 +113,14 @@ public class LandingPage {
         userIdLabel.setBounds(100, 150, 160, 25);
         panel.add(userIdLabel);
         
+        JLabel userTypeLabel = new JLabel("Type: ");
+        userTypeLabel.setBounds(10, 180, 80, 25);
+        panel.add(userTypeLabel);
+
+        JLabel currentUserTypeLabel = new JLabel(currentUser.getUserType().toString());
+        currentUserTypeLabel.setBounds(100, 180, 160, 25);
+        panel.add(currentUserTypeLabel);
+        
         
         // Add components based on user type
         switch (userType) {
