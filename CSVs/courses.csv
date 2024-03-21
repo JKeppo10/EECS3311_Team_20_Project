@@ -1,1 +1,12 @@
-coursename,coursecode,professor,email,location
+coursecode,coursename,professor,email,location
+EECS3311,Design Project,Song Wang,songwang@yorku.ca,001
+CSCI1101,Introduction to Computer Science,Alice Johnson,alicejohnson@yorku.ca,102
+MATH2240,Linear Algebra,Bob Smith,bobsmith@yorku.ca,203
+PHYS4410,Thermodynamics,Charles Lee,charleslee@yorku.ca,304
+CHEM1010,General Chemistry,Diana Green,diangreen@yorku.ca,405
+BIOL3200,Genetics,Eric Brown,ericbrown@yorku.ca,506
+HIST2100,World History,Fiona White,fionawhite@yorku.ca,107
+PSYC3300,Cognitive Psychology,George Black,georgeblack@yorku.ca,208
+ECON2200,Macroeconomics,Hannah Grey,hannahgrey@yorku.ca,309
+ENGL1500,American Literature,Ian Gold,iangold@yorku.ca,410
+ARTS1001,Introduction to Fine Arts,Julia Silver,juliasilver@yorku.ca,511

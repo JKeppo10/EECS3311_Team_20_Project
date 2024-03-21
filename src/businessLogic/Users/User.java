@@ -28,7 +28,7 @@ public class User {
         this.userType = userType;
     }
 
-    // Mutators and accessors
+    // Getters and Setters
     public String getName() {
         return name;
     }
