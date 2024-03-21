@@ -96,7 +96,7 @@ public class LoginPage {
         // Set frame visibility
         frame.setVisible(true);
         
-        //check 
+      //check 
         logInButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = userNameField.getText();
@@ -108,9 +108,8 @@ public class LoginPage {
                     maintainUser.load();
                     for (User user : maintainUser.users) {
                         if (user.getName().equalsIgnoreCase(username) && user.getPW().equals(password)) {
-                            JOptionPane.showMessageDialog(null, "Login Successful!");
-                            // Open LandingPage upon successful login
-                            new LandingPage();
+                            // Open LandingPage with user type upon successful login
+                            new LandingPage(user.getUserType());
                             // Close the current login frame
                             JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(userNameField);
                             loginFrame.dispose();

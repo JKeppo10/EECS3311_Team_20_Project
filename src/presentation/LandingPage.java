@@ -23,28 +23,81 @@ import presentation.*;
 
 public class LandingPage {
 
-    public LandingPage() {
+    private UserTypes userType;
+
+    public LandingPage(UserTypes userType) {
+        this.userType = userType;
+
         // Initialize the frame
         JFrame frame = new JFrame("Landing Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setResizable(false);
 
-        // Add a label to indicate landing page
-        JLabel label = new JLabel("Welcome to Landing Page");
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        frame.add(label);
+        // Customize LandingPage based on user type
+        customizeLandingPage(frame);
 
         // Set frame visibility
         frame.setVisible(true);
     }
 
+    private void customizeLandingPage(JFrame frame) {
+        JPanel panel = new JPanel();
+        panel.setLayout(null); // Using absolute layout
+
+        // Add common components
+        JLabel welcomeLabel = new JLabel("Welcome to Landing Page");
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setBounds(50, 20, 300, 30);
+        panel.add(welcomeLabel);
+
+        // Add components based on user type
+        switch (userType) {
+            case FACULTY:
+                addFacultyFeatures(panel);
+                break;
+            case NON_FACULTY:
+                addNonFacultyFeatures(panel);
+                break;
+            case STUDENT:
+                addStudentFeatures(panel);
+                break;
+            case GUEST:
+                addGuestFeatures(panel);
+                break;
+        }
+
+        // Add panel to frame
+        frame.add(panel);
+    }
+
+    private void addFacultyFeatures(JPanel panel) {
+        // Add components specific to FACULTY user type
+        // Example: JButton, JLabel, etc.
+    }
+
+    private void addNonFacultyFeatures(JPanel panel) {
+        // Add components specific to NON_FACULTY user type
+        // Example: JButton, JLabel, etc.
+    }
+
+    private void addStudentFeatures(JPanel panel) {
+        // Add components specific to STUDENT user type
+        // Example: JButton, JLabel, etc.
+    }
+
+    private void addGuestFeatures(JPanel panel) {
+        // Add components specific to GUEST user type
+        // Example: JButton, JLabel, etc.
+    }
+
     public static void main(String[] args) {
+        // Simulate login with user type
+        UserTypes userType = UserTypes.FACULTY; // Change to actual user type after login
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new LandingPage();
+                new LandingPage(userType);
             }
         });
     }
 }
-
