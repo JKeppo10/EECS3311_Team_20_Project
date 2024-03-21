@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 
 import database.*;
 import businessLogic.Users.*;
+import presentation.*;
 
 public class LoginPage {
 
@@ -34,7 +35,7 @@ public class LoginPage {
     private JButton signUpButton;
 
     public LoginPage() {
-        // Initialize the frame
+    	// Initialize the frame
         JFrame frame = new JFrame("Login Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
@@ -76,6 +77,18 @@ public class LoginPage {
         signUpButton = new JButton("Sign Up");
         signUpButton.setBounds(250, 190, 100, 30);
         loginPanel.add(signUpButton);
+        
+        // Add signup button listener
+        signUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Dispose the current login frame
+                JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(loginPanel);
+                loginFrame.dispose();
+                
+                // Call startGUI method of SignUpPage
+                SignUpPage.startGUI();
+            }
+        });
 
         // Add login panel to the frame
         frame.add(loginPanel);

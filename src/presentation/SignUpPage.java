@@ -40,7 +40,7 @@ public class SignUpPage {
         });
 	}
 	
-	private static void startGUI() {
+	static void startGUI() {
 		
         JFrame frame = new JFrame("Simple GUI"); // Create a frame with a title
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close the application when the window is closed
