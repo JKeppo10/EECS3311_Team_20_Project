@@ -12,10 +12,9 @@ import businessLogic.Users.UserTypes;
 public class MaintainUser {
 	
     public ArrayList<User> users = new ArrayList<User>();
-    public String path;
+    private static final String path = "C:\\Users\\keppo\\git\\EECS3311_Team_20_Project\\CSVs\\user.csv";
 
-    public void load(String path) throws Exception {
-        this.path = path; // Assigning the path parameter to the class-level variable
+    public void load() throws Exception {
         CsvReader reader = new CsvReader(path);
         reader.readHeaders();
 
@@ -65,17 +64,15 @@ public class MaintainUser {
         } 
         if (usernameExists(newUser.getName())){
         	return "A user with this name already exists.";
-        }
-        	else {
-        		users.add(newUser);
-    	        try {
-    	            update(path);
-    	            return "New user added successfully.";
-    	        } 
-    	        catch (Exception e) {
-    	            e.printStackTrace();
-    	            return "Error occurred while updating the CSV file.";
-    	        }   
+		} else {
+			users.add(newUser);
+			try {
+				update(path);
+				return "New user added successfully.";
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "Error occurred while updating the CSV file.";
+			}  
         }
 	}
 	
@@ -120,10 +117,9 @@ public class MaintainUser {
 	}
 
     public static void main(String[] args) throws Exception {
-        String path = "C:\\Users\\keppo\\git\\EECS3311_Team_20_Project\\CSVs\\user.csv";
         MaintainUser maintain = new MaintainUser();
 
-        maintain.load(path);
+        maintain.load();
         for (User u : maintain.users) {
             System.out.println(u.getName());
         }
