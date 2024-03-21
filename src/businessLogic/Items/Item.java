@@ -4,7 +4,7 @@ public class Item {
 	private String name;
 	private int numCopies;
 	private boolean online;
-	private int uniqueIdNumber;
+	private int uniqueId;
 	private String location;
 	boolean purchasable;
 
@@ -12,11 +12,11 @@ public class Item {
 
 	}
 
-	public Item(String name, int numCopies, boolean online, int uniqueIdNumber, String location, boolean purchasable) {
+	public Item(String name, int uniqueId, int numCopies, String location, boolean online, boolean purchasable) {
 		this.name = name;
 		this.numCopies = numCopies;
 		this.online = online;
-		this.uniqueIdNumber = uniqueIdNumber;
+		this.uniqueId = uniqueId;
 		this.location = location;
 		this.purchasable = purchasable;
 	}
@@ -34,7 +34,7 @@ public class Item {
 	}
 
 	public void setUniqueIdNumber(int uniqueIdNumber) {
-		this.uniqueIdNumber = uniqueIdNumber;
+		this.uniqueId = uniqueIdNumber;
 	}
 
 	public void setLocation(String location) {
@@ -58,7 +58,7 @@ public class Item {
 	}
 
 	public int getUniqueIdNumber() {
-		return this.uniqueIdNumber;
+		return this.uniqueId;
 	}
 
 	public String getLocation() {
