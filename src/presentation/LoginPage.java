@@ -82,11 +82,11 @@ public class LoginPage {
         signUpButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Dispose the current login frame
-                JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor(loginPanel);
+                JFrame loginFrame = (JFrame) SwingUtilities.getWindowAncestor((JButton) e.getSource());
                 loginFrame.dispose();
                 
-                // Call startGUI method of SignUpPage
-                SignUpPage.startGUI();
+                // Open the SignUpPage
+                new SignUpPage();
             }
         });
 

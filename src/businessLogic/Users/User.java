@@ -13,6 +13,12 @@ public class User {
 	public User() {
 
 	}
+	
+	public User(String name, String pw, String email) {
+		this.name = name;
+		this.pw = pw;
+		this.email = email;
+	}
 
 	// basic constructor
 	public User(String name, String pw, Integer id, String email, UserTypes usertype) {
