@@ -15,6 +15,7 @@ public class MaintainUser {
     public String path;
 
     public void load(String path) throws Exception {
+        this.path = path; // Assigning the path parameter to the class-level variable
         CsvReader reader = new CsvReader(path);
         reader.readHeaders();
 
@@ -61,10 +62,30 @@ public class MaintainUser {
 	public String addUser(User newUser) {
         if (emailExists(newUser.getEmail())) {
             return "A user with this email already exists.";
-        } else {
-            users.add(newUser);
-            return "New user added successfully.";
+        } 
+        if (usernameExists(newUser.getName())){
+        	return "A user with this name already exists.";
         }
+        	else {
+        		users.add(newUser);
+    	        try {
+    	            update(path);
+    	            return "New user added successfully.";
+    	        } 
+    	        catch (Exception e) {
+    	            e.printStackTrace();
+    	            return "Error occurred while updating the CSV file.";
+    	        }   
+        }
+	}
+	
+	private boolean usernameExists(String username) {
+		for (User user : users) {
+			if (user.getName().equalsIgnoreCase(username)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean emailExists(String email) {
@@ -74,6 +95,28 @@ public class MaintainUser {
 			}
 		}
 		return false;
+	}
+	
+	public String removeUser(String emailRemove) {
+	    boolean userFound = false;
+	    for (User user : users) {
+	        if (user.getEmail().equalsIgnoreCase(emailRemove)) {
+	            users.remove(user);
+	            userFound = true;
+	            break; 
+	        }
+	    }
+	    if (userFound) {
+	        try {
+	            update(path);
+	            return "User removed successfully.";
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return "Error occurred while updating the CSV file.";
+	        }
+	    } else {
+	        return "User not found.";
+	    }
 	}
 
     public static void main(String[] args) throws Exception {
@@ -88,9 +131,12 @@ public class MaintainUser {
         // Assuming you have a UserType enum with values: FACULTY, STUDENT, NON_FACULTY
         User newUser = new User("t4", "t4t4", 4, "t4@yorku.ca", UserTypes.FACULTY);
         
-        String result = maintain.addUser(newUser);
-        System.out.println(result);
+        String addResult = maintain.addUser(newUser);
+        System.out.println(addResult);
         
-        maintain.update(path);
+        String removeResult = maintain.removeUser("t5@yorku.ca");
+        System.out.println(removeResult);
+        
+        //maintain.update(path);
     }
 }
