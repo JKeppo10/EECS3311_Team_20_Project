@@ -45,6 +45,8 @@ public class LandingPage {
 	private ArrayList<Course> allCourses;
 	private ArrayList<Item> inventory;
 	private JPanel panel;
+	private Integer dueDateWarnings = 0;
+	private JButton rentButton;
 
 	public LandingPage(User user) {
 		this.currentUser = user;
@@ -125,6 +127,7 @@ public class LandingPage {
     	   currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); // Using /t doesn't work in the GUI for some reason
     	   if(differenceDays(dueDates.get(i)) <= 0) {
     		   currentlyRented[i] += " (DUE DATE WARNING)";
+    		   dueDateWarnings++;
     	   }
     	   
        }
@@ -151,6 +154,20 @@ public class LandingPage {
 	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
 	    userPenalty.setBounds(680,240,50,50);
 	    panel.add(userPenalty);
+	    
+	   
+		// Update the rent button based on the number of due date warnings
+	    if (dueDateWarnings >= 3) {
+	        rentButton.setText("Please resolve due date warnings.");
+	        rentButton.setEnabled(false);
+	    } else if (currentUserItemsID.size() < 10) {
+	        rentButton.setText("Rent Item");
+	        rentButton.setEnabled(true);
+	    } else {
+	        rentButton.setText("Max items rented. Please return an item.");
+	        rentButton.setEnabled(false);
+	    }
+	    
 	    currentlyRentedList.repaint();
 	}
 	
@@ -355,7 +372,7 @@ public class LandingPage {
 		});
 
 		// Add button to rent selected item
-		JButton rentButton = new JButton("Rent Selected Item");
+		this.rentButton = new JButton("Rent Selected Item");
 		rentButton.setBounds(420, 220, 150, 25);
 		panel.add(rentButton);
 
