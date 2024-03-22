@@ -3,6 +3,7 @@ package presentation;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -21,7 +22,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.awt.event.ActionEvent;
 
 import database.*;
@@ -115,7 +116,7 @@ public class LandingPage {
 	                passwordField.setEchoChar((char) 0); // Password will be visible
 	                showPasswordButton.setText("Hide");
 	            } else {
-	                passwordField.setEchoChar('â€¢'); // Password will be masked
+	                passwordField.setEchoChar('•'); // Password will be masked
 	                showPasswordButton.setText("Show");
 	            }
 	        }
@@ -177,11 +178,6 @@ public class LandingPage {
         JButton searchButton = new JButton("Search");
         searchButton.setBounds(320, 220, 80, 25);
         panel.add(searchButton);
-        
-        // Add label for selected item
-        JLabel selectedItemLabel = new JLabel("Selected Item:");
-        selectedItemLabel.setBounds(100, 240, 200, 25);
-        panel.add(selectedItemLabel);
 
         JTextArea searchResultTextArea = new JTextArea();
         searchResultTextArea.setEditable(false);
@@ -189,114 +185,90 @@ public class LandingPage {
         scrollPane.setBounds(100, 260, 500, 200);
         panel.add(scrollPane);
 
-        // Action listener for the search button
+        // Add action listener to the search button
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String itemName = searchBar.getText().trim();
-                if (!itemName.isEmpty()) {
+                String searchTerm = searchBar.getText().trim();
+                if (!searchTerm.isEmpty()) {
                     try {
-                        ArrayList<String[]> searchResults = MaintainInventory.load();
-                        ArrayList<String[]> matchingItems = new ArrayList<>();
-                        for (String[] item : searchResults) {
-                            if (item[0].toLowerCase().contains(itemName.toLowerCase())) {
-                                matchingItems.add(item);
+                        ArrayList<String[]> searchResult = MaintainInventory.load();
+                        StringBuilder resultText = new StringBuilder();
+                        for (String[] item : searchResult) {
+                            if (item[0].toLowerCase().contains(searchTerm.toLowerCase())) {
+                                resultText.append("Item Name: ").append(item[0]).append(", Item ID: ").append(item[1]).append("\n");
                             }
                         }
-                        // Debugging line to print matching items
-                        System.out.println("Matching Items: " + matchingItems);
-                        
-                        if (!matchingItems.isEmpty()) {
-                            // Display selectable search results
-                            String[] options = new String[matchingItems.size()];
-                            for (int i = 0; i < matchingItems.size(); i++) {
-                                options[i] = matchingItems.get(i)[0] + " (ID: " + matchingItems.get(i)[1] + ")";
-                            }
-                            // Debugging line to print selected option from JOptionPane
-                            String selectedOption = (String) JOptionPane.showInputDialog(panel, "Select an item:", "Item Search Results", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-                            System.out.println("Selected Option: " + selectedOption);
-                            
-                            if (selectedOption != null) {
-                                // Get the selected item name from the selected option
-                                String[] parts = selectedOption.split("\\(ID:|\\)");
-                                String selectedItemName = parts[0].trim();
-                                System.out.println("Selected Item Name: " + selectedItemName);
-                                // Debugging output for matchingItems
-                                System.out.println("Matching Items:");
-                                for (String[] item : matchingItems) {
-                                    System.out.println(Arrays.toString(item));
-                                }
-                                // Find the selected item in the matching items list
-                                for (String[] item : matchingItems) {
-                                    if (item[0].equals(selectedItemName)) {
-                                        // Display all attributes of the selected item in the search result text area
-                                        StringBuilder itemInfo = new StringBuilder();
-                                        itemInfo.append("Title: ").append(item[0]).append("\n");
-                                        itemInfo.append("ID: ").append(item[1]).append("\n");
-                                        itemInfo.append("Quantity Available: ").append(item[2]).append("\n");
-                                        itemInfo.append("Location: ").append(item[3]).append("\n");
-                                        itemInfo.append("Available Online: ").append(item[4]).append("\n");
-                                        itemInfo.append("Available for Purchase: ").append(item[5]).append("\n");
-                                        searchResultTextArea.setText(itemInfo.toString());
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                        } else {
-                            // Item not found
-                            JOptionPane.showMessageDialog(panel, "No matching items found.", "Item Search", JOptionPane.INFORMATION_MESSAGE);
+                        if (resultText.length() == 0) {
+                            resultText.append("No items found.");
                         }
+                        searchResultTextArea.setText(resultText.toString());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(panel, "Error loading inventory.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(panel, "Please enter an item name.", "Item Search", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(panel, "Please enter a search term.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
         
-        // Add button to rent selected item
-        JButton rentButton = new JButton("Rent Selected Item");
-        rentButton.setBounds(420, 220, 150, 25);
-        panel.add(rentButton);
+        // View Of Rented Books
+        int currUserID = currentUser.getId();
+        ArrayList<String[]> itemIDs = new ArrayList<String[]>();
+        ArrayList<String[]> inventory = new ArrayList<String[]>();
+        ArrayList<String[]> users = new ArrayList<String[]>();
+        try {
+             users = MaintainUser.loadString();
+			 itemIDs = MaintainUserItems.load();
+			 inventory = MaintainInventory.load();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+        // Get All Items IDs for currently rented for the corresponding user
+        ArrayList<String> currentUserItemsID = new ArrayList<String>();
+        ArrayList<String> dueDates = new ArrayList<String>();
+        for(int i = 0; i < itemIDs.size(); i++) {
+        	if(itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
+        		currentUserItemsID.add(itemIDs.get(i)[1]);
+        		dueDates.add(itemIDs.get(i)[2]);
+        	}
+        }
+        // Map All Item IDs to Names (ID, Name)
+        HashMap<String, String> inventoryMap = new HashMap<String, String>();
+        // Map Current User Items ID to Real Items in Inventory
+        for(int i = 0; i < inventory.size(); i++) {
+        	inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
+        }
+        // Use Map To List Current Users Items
+        String[] currentlyRented = new String[currentUserItemsID.size()];
+       for(int i = 0; i < currentUserItemsID.size(); i++) {
+    	   currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); // Using /t doesn't work in the GUI for some reason
+       }
+       
+        JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
+	    currentlyRentedLabel.setBounds(800,200,120,25);
+	    panel.add(currentlyRentedLabel);
+	    
+	    JList<String[]> currentlyRentedList = new JList(currentlyRented);
+	    currentlyRentedList.setBounds(770,230,300,500);
+	    panel.add(currentlyRentedList);
+	    
+	    //Penalty
+	    JLabel penalty = new JLabel("Penalty:");
+	    penalty.setBounds(680,230,125,25);
+	    panel.add(penalty);
         
-     // Action listener for the rent button
-        rentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Get the selected item name from the search result text area
-                String selectedItemInfo = searchResultTextArea.getText();
-                if (!selectedItemInfo.isEmpty()) {
-                    // Extract item ID from selected item info
-                    String[] lines = selectedItemInfo.split("\n");
-                    String itemID = lines[1].split(": ")[1];
-
-                    // Update UserItems.csv
-                    try {
-                        MaintainUserItems.addUserItem(currentUser.getId(), Integer.parseInt(itemID));
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                    // Update the number of copies of the selected item
-                    try {
-                        MaintainInventory.(Integer.parseInt(itemID), -1);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(panel, "Error updating number of copies.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                    // Notify the user
-                    JOptionPane.showMessageDialog(panel, "Item rented successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
-        
+	    double currentBalance = 0;
+	    for(int i = 0; i < users.size(); i++) {
+	    	if(users.get(i)[2].equals(Integer.toString(currUserID))) {
+	    		currentBalance = Double.parseDouble(users.get(i)[5]);
+	    	}
+	    }
+	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
+	    userPenalty.setBounds(680,240,50,50);
+	    panel.add(userPenalty);
+	    
 	    // Add components based on user type
 	    switch (userType) {
 	        case FACULTY:
