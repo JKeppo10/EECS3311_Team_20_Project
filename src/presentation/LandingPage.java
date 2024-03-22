@@ -162,6 +162,54 @@ public class LandingPage {
 	            new LoginPage(); // Open the LoginPage
 	        }
 	    });
+	    
+	    // Add item search label
+	    JLabel itemSearchLabel = new JLabel("Item Search:");
+	    itemSearchLabel.setBounds(10, 210, 100, 25);
+	    panel.add(itemSearchLabel);
+	    
+	    // Add search bar for inventory
+        JTextField searchBar = new JTextField();
+        searchBar.setBounds(100, 220, 200, 25);
+        panel.add(searchBar);
+
+        JButton searchButton = new JButton("Search");
+        searchButton.setBounds(320, 220, 80, 25);
+        panel.add(searchButton);
+
+        JTextArea searchResultTextArea = new JTextArea();
+        searchResultTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(searchResultTextArea);
+        scrollPane.setBounds(100, 260, 500, 200);
+        panel.add(scrollPane);
+
+        // Add action listener to the search button
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchTerm = searchBar.getText().trim();
+                if (!searchTerm.isEmpty()) {
+                    try {
+                        ArrayList<String[]> searchResult = MaintainInventory.load();
+                        StringBuilder resultText = new StringBuilder();
+                        for (String[] item : searchResult) {
+                            if (item[0].toLowerCase().contains(searchTerm.toLowerCase())) {
+                                resultText.append("Item Name: ").append(item[0]).append(", Item ID: ").append(item[1]).append("\n");
+                            }
+                        }
+                        if (resultText.length() == 0) {
+                            resultText.append("No items found.");
+                        }
+                        searchResultTextArea.setText(resultText.toString());
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(panel, "Error loading inventory.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(panel, "Please enter a search term.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
 	    // Add components based on user type
 	    switch (userType) {
