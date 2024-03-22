@@ -1,7 +1,9 @@
 package businessLogic.Users;
 
+import businessLogic.Users.Faculty.Builder;
+
 public class NonFaculty extends User {
-    private NonFaculty(String name, String pw, Integer id, String email, UserTypes userType) {
+    private NonFaculty(String name, String pw, Integer id, String email, UserTypes userType, Integer numRent) {
         super(name, pw, id, email, userType);
     }
 
@@ -11,6 +13,7 @@ public class NonFaculty extends User {
         private String pw;
         private String email;
         private int id;
+        private int numRent;
 
         public Builder name(String name) {
             this.name = name;
@@ -31,10 +34,14 @@ public class NonFaculty extends User {
             this.id = id;
             return this;
         }
+        
+        public Builder numRent(int numRent) {
+        	this.numRent = numRent;
+        	return this;
+        }
 
         public NonFaculty build() {
-            // Assuming UserTypes.NON_FACULTY is defined
-            return new NonFaculty(name, pw, id, email, UserTypes.NON_FACULTY);
+            return new NonFaculty(name, pw, id, email, UserTypes.NON_FACULTY, numRent);
         }
     }
 }

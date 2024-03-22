@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 
 public class MaintainUserItems {
@@ -54,11 +57,28 @@ public class MaintainUserItems {
         }
     }
     
-	public static boolean alreadyRented(Integer id, int parseInt) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+    public static boolean alreadyRented(Integer userId, int itemId) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+            // Skip the header line
+            reader.readLine(); // Assuming only one header line
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(","); // Assuming CSV uses a comma delimiter
+                if (values.length >= 2) {
+                    int parsedUserId = Integer.parseInt(values[0]);
+                    int parsedItemId = Integer.parseInt(values[1]);
+                    if (parsedUserId == userId && parsedItemId == itemId) {
+                        return true; // Found a matching entry
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();  // Handle potential file reading errors
+        }
+        return false; // No matching entry found
+    }
+    
     // Example usage
     public static void main(String[] args) throws IOException {
         // Load user-item connections

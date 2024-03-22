@@ -8,6 +8,9 @@ public abstract class User {
 	private Integer id;
 	private String type;
 	private UserTypes userType;
+	private Double balance;
+	private Integer numRent;
+	public final static Integer maxRent = 10;
 
 	// Empty constructor
 	public User() {
@@ -21,7 +24,7 @@ public abstract class User {
 		this.pw = pw;
 		this.email = email;
 		this.userType = usertype;
-
+		this.numRent = 0;
 	}
 
 	// mutators and accessors
@@ -63,5 +66,21 @@ public abstract class User {
 
 	public void setUserType(UserTypes userType) {
 		this.userType = userType;
+	}
+
+	public Integer getNumRent() {
+		return numRent;
+	}
+
+	public void setNumRent(Integer numRent) {
+		this.numRent = numRent;
+	}
+
+	public double getBalance() {
+		return balance;
+	}
+	
+	public void setBalance(Double balance) {
+		this.balance = balance;
 	}
 }

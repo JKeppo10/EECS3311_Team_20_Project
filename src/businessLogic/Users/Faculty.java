@@ -1,7 +1,7 @@
 package businessLogic.Users;
 
 public class Faculty extends User {
-    private Faculty(String name, String pw, Integer id, String email, UserTypes userType) {
+    private Faculty(String name, String pw, Integer id, String email, UserTypes userType, Integer numRent) {
         super(name, pw, id, email, userType);
     }
 
@@ -11,6 +11,7 @@ public class Faculty extends User {
         private String pw;
         private String email;
         private int id;
+        private int numRent;
 
         public Builder name(String name) {
             this.name = name;
@@ -31,9 +32,14 @@ public class Faculty extends User {
             this.id = id;
             return this;
         }
+        
+        public Builder numRent(int numRent) {
+        	this.numRent = numRent;
+        	return this;
+        }
 
         public Faculty build() {
-            return new Faculty(name, pw, id, email, UserTypes.FACULTY);
+            return new Faculty(name, pw, id, email, UserTypes.FACULTY, numRent);
         }
     }
 }

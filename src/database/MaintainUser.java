@@ -16,113 +16,120 @@ import com.csvreader.CsvWriter;
 
 import businessLogic.Users.*;
 
-
 public class MaintainUser {
 
 	public ArrayList<User> users = new ArrayList<User>();
 	private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\user.csv";
 	private static final String path2 = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\university.csv";
 	private int idCounter;
-	
+
 	private UserFactory userFactory;
 
-    private Map<String, String> universityEmailsAndTypes;
-	
+	private Map<String, String> universityEmailsAndTypes;
+
 	public MaintainUser() throws Exception {
-		this.userFactory = new UserFactory();
-        universityEmailsAndTypes = new HashMap<>();
-		load();
-	}
-	public static ArrayList<String[]> loadString() throws IOException {
-        ArrayList<String[]> users = new ArrayList<>();
-        CsvReader reader = new CsvReader(path);
-        reader.readHeaders();
-        while (reader.readRecord()) {
-            String[] userItem = {reader.get("name"), reader.get("password"), reader.get("id"), reader.get("email"), reader.get("type"), reader.get("Balance")};
-            users.add(userItem);
-        }
-        reader.close();
-        return users;
-    }
-	public void load() throws Exception {
-		CsvReader reader = new CsvReader(path);
-		reader.readHeaders();
+	    this.userFactory = new UserFactory();
+	    universityEmailsAndTypes = new HashMap<>();
+	    load();
+	  }
 
-		int maxId = 0;
+	  public static ArrayList<String[]> loadString() throws IOException {
+	    ArrayList<String[]> users = new ArrayList<>();
+	    CsvReader reader = new CsvReader(path);
+	    reader.readHeaders();
+	    while (reader.readRecord()) {
+	      String[] userItem = { reader.get("name"), reader.get("password"), reader.get("id"), reader.get("email"),
+	          reader.get("type"), reader.get("Balance"), reader.get("numRent") };
+	      users.add(userItem);
+	    }
+	    reader.close();
+	    return users;
+	  }
 
-        while (reader.readRecord()) {
-            String name = reader.get("name");
-            String pw = reader.get("password");
-            Integer id = Integer.valueOf(reader.get("id"));
-            String email = reader.get("email");
-            UserTypes userType = UserTypes.valueOf(reader.get("type"));
+	  public void load() throws Exception {
+	    CsvReader reader = new CsvReader(path);
+	    reader.readHeaders();
 
-            // Create user object using UserFactory
-            User user = userFactory.createUser(name, pw, id, email, userType);
-            if (user != null) {
-                users.add(user);
-                maxId = Math.max(maxId, id);
-            }
-        }
-        idCounter = maxId + 1;
-        loadUniversityEmails();
-	}
+	    int maxId = 0;
 
-	public void update(String path) throws Exception {
-		try {
-			CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
-			// name,password,id,email,type
-			csvOutput.write("name");
-			csvOutput.write("password");
-			csvOutput.write("id");
-			csvOutput.write("email");
-			csvOutput.write("type");
-			csvOutput.endRecord();
+	    while (reader.readRecord()) {
+	      String name = reader.get("name");
+	      String pw = reader.get("password");
+	      Integer id = Integer.valueOf(reader.get("id"));
+	      String email = reader.get("email");
+	      UserTypes userType = UserTypes.valueOf(reader.get("type"));
+	      double balance = Double.parseDouble(reader.get("Balance"));
+	      int numRent = Integer.parseInt(reader.get("numRent"));
 
-			// Write out the records
-			for (User u : users) {
-				csvOutput.write(u.getName());
-				csvOutput.write(u.getPW());
-				csvOutput.write(String.valueOf(u.getId()));
-				csvOutput.write(u.getEmail());
-				csvOutput.write(u.getUserType().toString()); // Write user type
-				csvOutput.endRecord();
-			}
-			csvOutput.close();
+	      // Create user object using UserFactory
+	      User user = userFactory.createUser(name, pw, id, email, userType, numRent);
+	      if (user != null) {
+	        users.add(user);
+	        maxId = Math.max(maxId, id);
+	      }
+	    }
+	    idCounter = maxId + 1;
+	    loadUniversityEmails();
+	  }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	  public void update(String path) throws Exception {
+	    try {
+	      CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
+	      // name,password,id,email,type,Balance,numRent
+	      csvOutput.write("name");
+	      csvOutput.write("password");
+	      csvOutput.write("id");
+	      csvOutput.write("email");
+	      csvOutput.write("type");
+	      csvOutput.write("Balance");
+	      csvOutput.write("numRent");
+	      csvOutput.endRecord();
+
+	      // Write out the records
+	      for (User u : users) {
+	        csvOutput.write(u.getName());
+	        csvOutput.write(u.getPW());
+	        csvOutput.write(String.valueOf(u.getId()));
+	        csvOutput.write(u.getEmail());
+	        csvOutput.write(u.getUserType().toString()); // Write user type
+	        csvOutput.write(String.valueOf(u.getBalance()));
+	        csvOutput.write(String.valueOf(u.getNumRent())); // Update numRent
+	        csvOutput.endRecord();
+	      }
+	      csvOutput.close();
+
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	  }
 
 	public String addUser(String name, String pw, String email, UserTypes userType) {
 
-	    // Use UserFactory to create a new user
-	    UserFactory userFactory = new UserFactory();
-	    User newUser = userFactory.createUser(name, pw, idCounter, email, userType);
-	    
-	    if (newUser == null) {
-	        return "Invalid user type provided.";
-	    }
+		// Use UserFactory to create a new user
+		UserFactory userFactory = new UserFactory();
+		User newUser = userFactory.createUser(name, pw, idCounter, email, userType, 0);
 
-	    if (emailExists(newUser.getEmail())) {
-	        return "A user with this email already exists.";
-	    }
-	    if (usernameExists(newUser.getName())) {
-	        return "A user with this name already exists.";
-	    } else {
-	        users.add(newUser);
-	        idCounter++;
-	        try {
-	            update(path);
-	            return "New user added successfully.";
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            return "Error occurred while updating the CSV file.";
-	        }
-	    }
+		if (newUser == null) {
+			return "Invalid user type provided.";
+		}
+
+		if (emailExists(newUser.getEmail())) {
+			return "A user with this email already exists.";
+		}
+		if (usernameExists(newUser.getName())) {
+			return "A user with this name already exists.";
+		} else {
+			users.add(newUser);
+			idCounter++;
+			try {
+				update(path);
+				return "New user added successfully.";
+			} catch (Exception e) {
+				e.printStackTrace();
+				return "Error occurred while updating the CSV file.";
+			}
+		}
 	}
-	
 
 	private boolean usernameExists(String username) {
 		for (User user : users) {
@@ -163,55 +170,56 @@ public class MaintainUser {
 			return "User not found.";
 		}
 	}
-	
-    public boolean isStrongPassword(String password) {
-        // Define regex patterns for password validation
-        String uppercaseRegex = ".*[A-Z].*";
-        String lowercaseRegex = ".*[a-z].*";
-        String digitRegex = ".*\\d.*";
-        String specialCharRegex = ".*[!@#$%^&*()\\[\\]{};:,.<>?~_+-=|].*";
 
-        // Check if password meets all requirements
-        return password.matches(uppercaseRegex) &&
-               password.matches(lowercaseRegex) &&
-               password.matches(digitRegex) &&
-               password.matches(specialCharRegex);
-    }
-    
-    private void loadUniversityEmails() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(path2))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String email = parts[0].trim(); // Assuming email is in the first column
-                    String type = parts[1].trim(); // Assuming type is in the second column
-                    universityEmailsAndTypes.put(email.toLowerCase(), type.toUpperCase()); // Store email and type in map, email in lowercase for case-insensitive comparison
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	public boolean isStrongPassword(String password) {
+		// Define regex patterns for password validation
+		String uppercaseRegex = ".*[A-Z].*";
+		String lowercaseRegex = ".*[a-z].*";
+		String digitRegex = ".*\\d.*";
+		String specialCharRegex = ".*[!@#$%^&*()\\[\\]{};:,.<>?~_+-=|].*";
 
-    public boolean isUniversityEmailAndType(String email, String userType) {
-        String registeredType = universityEmailsAndTypes.get(email.toLowerCase());
-        return registeredType != null && registeredType.equals(userType.toUpperCase());
-    }
+		// Check if password meets all requirements
+		return password.matches(uppercaseRegex) && password.matches(lowercaseRegex) && password.matches(digitRegex)
+				&& password.matches(specialCharRegex);
+	}
+
+	private void loadUniversityEmails() {
+		try (BufferedReader reader = new BufferedReader(new FileReader(path2))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length >= 2) {
+					String email = parts[0].trim(); // Assuming email is in the first column
+					String type = parts[1].trim(); // Assuming type is in the second column
+					universityEmailsAndTypes.put(email.toLowerCase(), type.toUpperCase()); // Store email and type in
+																							// map, email in lowercase
+																							// for case-insensitive
+																							// comparison
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isUniversityEmailAndType(String email, String userType) {
+		String registeredType = universityEmailsAndTypes.get(email.toLowerCase());
+		return registeredType != null && registeredType.equals(userType.toUpperCase());
+	}
 
 	// tests
-    public static void main(String[] args) throws Exception {
-        MaintainUser maintain = new MaintainUser();
-        maintain.load();
-        for (User u : maintain.users) {
-            System.out.println(u.getName());
-        }
+	public static void main(String[] args) throws Exception {
+		MaintainUser maintain = new MaintainUser();
+		maintain.load();
+		for (User u : maintain.users) {
+			System.out.println(u.getName());
+		}
 
-        // Assuming you have a UserType enum with values: FACULTY, STUDENT, NON_FACULTY
-        String addUserResult = maintain.addUser( "t5", "t5t5", "t5@yorku.ca",UserTypes.STUDENT);
-        System.out.println(addUserResult);
+		// Assuming you have a UserType enum with values: FACULTY, STUDENT, NON_FACULTY
+		String addUserResult = maintain.addUser("t5", "t5t5", "t5@yorku.ca", UserTypes.STUDENT);
+		System.out.println(addUserResult);
 
-        String removeResult = maintain.removeUser("t5@yorku.ca");
-        System.out.println(removeResult);
-    }
+		String removeResult = maintain.removeUser("t5@yorku.ca");
+		System.out.println(removeResult);
+	}
 }
