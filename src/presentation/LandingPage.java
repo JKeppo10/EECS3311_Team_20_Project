@@ -21,10 +21,14 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.awt.event.ActionEvent;
 
 import database.*;
@@ -88,56 +92,59 @@ public class LandingPage {
 	}
 
 	private void updateRented() {
-		// View Of Rented Books
 		int currUserID = currentUser.getId();
-		ArrayList<String[]> itemIDs = new ArrayList<String[]>();
-		ArrayList<String[]> inventory = new ArrayList<String[]>();
-		ArrayList<String[]> users = new ArrayList<String[]>();
-		try {
-			users = MaintainUser.loadString();
-			itemIDs = MaintainUserItems.load();
-			inventory = MaintainInventory.loadString();
+        ArrayList<String[]> itemIDs = new ArrayList<String[]>();
+        ArrayList<String[]> inventory = new ArrayList<String[]>();
+        ArrayList<String[]> users = new ArrayList<String[]>();
+        try {
+             users = MaintainUser.loadString();
+			 itemIDs = MaintainUserItems.load();
+			 inventory = MaintainInventory.loadString();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		// Get All Items IDs for currently rented for the corresponding user
-		ArrayList<String> currentUserItemsID = new ArrayList<String>();
-		ArrayList<String> dueDates = new ArrayList<String>();
-		for (int i = 0; i < itemIDs.size(); i++) {
-			if (itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
-				currentUserItemsID.add(itemIDs.get(i)[1]);
-				dueDates.add(itemIDs.get(i)[2]);
-			}
-		}
-		// Map All Item IDs to Names (ID, Name)
-		HashMap<String, String> inventoryMap = new HashMap<String, String>();
-		// Map Current User Items ID to Real Items in Inventory
-		for (int i = 0; i < inventory.size(); i++) {
-			inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
-		}
-		// Use Map To List Current Users Items
-		String[] currentlyRented = new String[currentUserItemsID.size()];
-		for (int i = 0; i < currentUserItemsID.size(); i++) {
-			currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); 																								
-		}
-
-		JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
-		currentlyRentedLabel.setBounds(800, 200, 120, 25);
-		panel.add(currentlyRentedLabel);
-
-		JList<String[]> currentlyRentedList = new JList(currentlyRented);
-		currentlyRentedList.setBounds(770, 230, 300, 500);
-		panel.add(currentlyRentedList);
-		
+        // Get All Items IDs for currently rented for the corresponding user
+        ArrayList<String> currentUserItemsID = new ArrayList<String>();
+        ArrayList<String> dueDates = new ArrayList<String>();
+        for(int i = 0; i < itemIDs.size(); i++) {
+        	if(itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
+        		currentUserItemsID.add(itemIDs.get(i)[1]);
+        		dueDates.add(itemIDs.get(i)[2]);
+        	}
+        }
+        // Map All Item IDs to Names (ID, Name)
+        HashMap<String, String> inventoryMap = new HashMap<String, String>();
+        // Map Current User Items ID to Real Items in Inventory
+        for(int i = 0; i < inventory.size(); i++) {
+        	inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
+        }
+        // Use Map To List Current Users Items
+        String[] currentlyRented = new String[currentUserItemsID.size()];
+       for(int i = 0; i < currentUserItemsID.size(); i++) {
+    	   currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); // Using /t doesn't work in the GUI for some reason
+    	   if(differenceDays(dueDates.get(i)) <= 0) {
+    		   currentlyRented[i] += " (DUE DATE WARNING)";
+    	   }
+    	   
+       }
+       
+        JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
+	    currentlyRentedLabel.setBounds(800,200,120,25);
+	    panel.add(currentlyRentedLabel);
+	    
+	    JList<String[]> currentlyRentedList = new JList(currentlyRented);
+	    currentlyRentedList.setBounds(730,230,420,500);
+	    panel.add(currentlyRentedList);
+	    
 	    //Penalty
 	    JLabel penalty = new JLabel("Penalty:");
 	    penalty.setBounds(680,230,125,25);
 	    panel.add(penalty);
         
 	    double currentBalance = 0;
-	    for(int i = 0; i < users.size(); i++) {
-	    	if(users.get(i)[2].equals(Integer.toString(currUserID))) {
-	    		currentBalance = Double.parseDouble(users.get(i)[5]);
+	    for(int i = 0; i < dueDates.size(); i++) {
+	    	if(differenceDays(dueDates.get(i)) < 0) {
+	    		currentBalance += 0.5*(-1 * differenceDays(dueDates.get(i)));
 	    	}
 	    }
 	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
@@ -193,7 +200,7 @@ public class LandingPage {
 					passwordField.setEchoChar((char) 0); // Password will be visible
 					showPasswordButton.setText("Hide");
 				} else {
-					passwordField.setEchoChar('�'); // Password will be masked
+					passwordField.setEchoChar('*'); // Password will be masked
 					showPasswordButton.setText("Show");
 				}
 			}
@@ -531,5 +538,17 @@ public class LandingPage {
 
 	private void addGuestFeatures(JPanel panel) {
 
+	}
+	private int differenceDays(String dueDate) {
+		Date today = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date formatDueDate = new Date();
+		try {
+			formatDueDate = formatter.parse(dueDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		long duration = formatDueDate.getTime() - today.getTime();
+		return (int) TimeUnit.DAYS.convert(duration, TimeUnit.MILLISECONDS);
 	}
 }
