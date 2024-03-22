@@ -1,8 +1,16 @@
 package database;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
@@ -13,12 +21,17 @@ public class MaintainUser {
 
 	public ArrayList<User> users = new ArrayList<User>();
 	private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\user.csv";
+	private static final String path2 = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\university.csv";
 	private int idCounter;
 	
 	private UserFactory userFactory;
+
+    private Map<String, String> universityEmailsAndTypes;
 	
-	public MaintainUser() {
+	public MaintainUser() throws Exception {
 		this.userFactory = new UserFactory();
+        universityEmailsAndTypes = new HashMap<>();
+		load();
 	}
 
 	public void load() throws Exception {
@@ -42,6 +55,7 @@ public class MaintainUser {
             }
         }
         idCounter = maxId + 1;
+        loadUniversityEmails();
 	}
 
 	public void update(String path) throws Exception {
@@ -152,6 +166,27 @@ public class MaintainUser {
                password.matches(lowercaseRegex) &&
                password.matches(digitRegex) &&
                password.matches(specialCharRegex);
+    }
+    
+    private void loadUniversityEmails() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(path2))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2) {
+                    String email = parts[0].trim(); // Assuming email is in the first column
+                    String type = parts[1].trim(); // Assuming type is in the second column
+                    universityEmailsAndTypes.put(email.toLowerCase(), type.toUpperCase()); // Store email and type in map, email in lowercase for case-insensitive comparison
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isUniversityEmailAndType(String email, String userType) {
+        String registeredType = universityEmailsAndTypes.get(email.toLowerCase());
+        return registeredType != null && registeredType.equals(userType.toUpperCase());
     }
 
 	// tests

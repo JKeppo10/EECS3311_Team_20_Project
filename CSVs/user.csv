@@ -6,3 +6,5 @@ t4,t4t4,4,t4@yorku.ca,NON_FACULTY
 t6,t6t6,5,t6@yorku.ca,FACULTY
 t7,t7t7,6,t7@yorku.ca,GUEST
 test,Aa1!,7,test,FACULTY
+t8,aA1!,8,t8@yorku.ca,STUDENT
+t9,Aa1!,9,t9@yorku.ca,GUEST

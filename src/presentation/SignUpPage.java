@@ -37,10 +37,10 @@ public class SignUpPage {
 
 	public SignUpPage() {
 		
-		//intialize database
-        maintainUser = new MaintainUser(); // Initialize MaintainUser instance
+
         try {
-            maintainUser.load(); // Load existing data
+    		//intialize database
+            maintainUser = new MaintainUser(); // Initialize MaintainUser instance
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error loading existing user data: " + ex.getMessage());
         }
@@ -120,6 +120,14 @@ public class SignUpPage {
 	            if (!maintainUser.isStrongPassword(password)) {
 	                JOptionPane.showMessageDialog(null, "Password is not strong enough. It must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
 	                return; // Stop signup process
+	            }
+
+	            // Check if the email is a university email for Faculty, Student, Non-Faculty types
+	            if (userType == UserTypes.FACULTY || userType == UserTypes.STUDENT || userType == UserTypes.NON_FACULTY) {
+	                if (!maintainUser.isUniversityEmailAndType(email, userType.toString())) {
+	                    JOptionPane.showMessageDialog(null, "You are not registering with an email registered in the university database with the same type.");
+	                    return; // Stop signup process
+	                }
 	            }
 
 	            // Try to add user to database

@@ -107,10 +107,9 @@ public class LoginPage {
 				String username = userNameField.getText();
 				String password = new String(passwordField.getPassword());
 
-				// Check credentials
-				MaintainUser maintainUser = new MaintainUser();
 				try {
-					maintainUser.load();
+					// Check credentials
+					MaintainUser maintainUser = new MaintainUser();
 					for (User user : maintainUser.users) {
 						if (user.getName().equalsIgnoreCase(username) && user.getPW().equals(password)) {
 							// Open LandingPage with user type upon successful login
