@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
@@ -44,8 +45,6 @@ public class LandingPage {
 	private ArrayList<Course> allCourses;
 	private ArrayList<Item> inventory;
 	private JPanel panel;
-	private int numRentedItems;
-	private JButton rentButton;
 
 	public LandingPage(User user) {
 		this.currentUser = user;
@@ -94,7 +93,6 @@ public class LandingPage {
 	}
 
 	private void updateRented() {
-
 		int currUserID = currentUser.getId();
         ArrayList<String[]> itemIDs = new ArrayList<String[]>();
         ArrayList<String[]> inventory = new ArrayList<String[]>();
@@ -150,35 +148,10 @@ public class LandingPage {
 	    		currentBalance += 0.5*(-1 * differenceDays(dueDates.get(i)));
 	    	}
 	    }
-
-	    // **Calculate the number of rented items**
-	    int numRentedItems = currentUserItemsID.size();
-
-	    // **Penalty Label**
-	    JLabel penaltyLabel = new JLabel("Penalty:");
-	    penaltyLabel.setBounds(680, 230, 125, 25);
-	    panel.add(penaltyLabel);
-
-	    JLabel userPenaltyLabel = new JLabel(String.format("$%,.2f", currentBalance));
-	    userPenaltyLabel.setBounds(680, 240, 50, 50);
-	    panel.add(userPenaltyLabel);
-
-	    // **Number of Rented Items Label**
-	    JLabel numRentedLabel = new JLabel("Number of Rented Items: " + numRentedItems + "/10 (Max)");
-	    numRentedLabel.setBounds(770, 180, 250, 25);
-	    panel.add(numRentedLabel);
-	    
-	    if (numRentedItems >= 10) {
-	        rentButton.setText("Max items rented. Please return an item.");
-	        rentButton.setEnabled(false);
-	    } else {
-	        rentButton.setText("Rent Item");
-	        rentButton.setEnabled(true);
-	    }
-	    
-	    numRentedLabel.repaint();
+	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
+	    userPenalty.setBounds(680,240,50,50);
+	    panel.add(userPenalty);
 	    currentlyRentedList.repaint();
-	    
 	}
 	
 
@@ -382,7 +355,7 @@ public class LandingPage {
 		});
 
 		// Add button to rent selected item
-		this.rentButton = new JButton("Rent Selected Item");
+		JButton rentButton = new JButton("Rent Selected Item");
 		rentButton.setBounds(420, 220, 150, 25);
 		panel.add(rentButton);
 
@@ -392,44 +365,115 @@ public class LandingPage {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
 		        String selectedItemInfo = searchResultTextArea.getText();
-		        if(numRentedItems < 10) {
-			        if (!selectedItemInfo.isEmpty()) {
-			            // Extract item ID from selected item info
-			            String[] lines = selectedItemInfo.split("\n");
-			            String itemID = lines[1].split(": ")[1]; // "ID: " followed by the ID
 
-			            // Check if user already rented this item
-			            boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
+		        if (!selectedItemInfo.isEmpty()) {
+		            // Extract item ID from selected item info
+		            String[] lines = selectedItemInfo.split("\n");
+		            String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
 
-			            if (!alreadyRented) {
-			                try {
-			                    // Calculate due date (current date + 30 days)
-			                    LocalDate today = LocalDate.now(); // Assuming you have access to LocalDate from java.time
-			                    LocalDate dueDate = today.plusDays(30);
+		            // Check if user already rented this item
+		            boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
 
-			                    MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID, dueDate.toString()); // Add due date as third argument
+		            if (!alreadyRented) {
+		                try {
+		                    // Calculate due date (current date + 30 days)
+		                    LocalDate today = LocalDate.now(); // Assuming you have access to LocalDate from java.time
+		                    LocalDate dueDate = today.plusDays(30);
 
-			                    JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+		                    MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID, dueDate.toString()); // Add due date as third argument
 
-			                    // Update the currentlyRentedList in the GUI
-			                    updateRented();
+		                    JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
-			                } catch (IOException ex) {
-			                    ex.printStackTrace();
-			                    JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
-			                }
-			            } else {
-			                JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-			            }
-			        } else {
-			            JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-			        } 
+		                    // Update the currentlyRentedList in the GUI
+		                    updateRented();
+
+		                } catch (IOException ex) {
+		                    ex.printStackTrace();
+		                    JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
+		                }
+		            } else {
+		                JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
+		            }
 		        } else {
-		            JOptionPane.showMessageDialog(null, "You cannot rent more items. Please return an item first.");
+		            JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
 		        }
 		    }
 		});
 		
+		//Newsletter Button
+		JButton newsletter = new JButton("Newsletter Subscriptions");
+		newsletter.setBounds(10, 500, 200, 30);
+		panel.add(newsletter);
+		
+		newsletter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame newsFrame = new JFrame("Newsletter Subcriptions.");
+				newsFrame.setVisible(true);
+				newsFrame.setSize(500,500);
+				
+				JButton nyTimes = new JButton("Subscribe To NY Times");
+				JButton globeAndMail = new JButton("Subscribe To The Globe And Mail");
+				JButton theDailyMail = new JButton("Subscribe To The Daily Mail");
+				
+				nyTimes.setBounds(100,100,300,50);
+				globeAndMail.setBounds(100,200,300,50);
+				theDailyMail.setBounds(100,300,300,50);
+				
+				newsFrame.add(nyTimes);
+				newsFrame.add(globeAndMail);
+				newsFrame.add(theDailyMail);
+				
+				nyTimes.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							JEditorPane nyTimesWeb = new JEditorPane("https://www.nytimes.com/ca/");
+							nyTimesWeb.setEditable(false);
+							JFrame nFrame = new JFrame("NY Times");
+							nFrame.add(new JScrollPane(nyTimesWeb));
+							nFrame.setSize(600,600);
+							nFrame.setVisible(true);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				
+				globeAndMail.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							JEditorPane globeWeb = new JEditorPane("https://www.theglobeandmail.com/canada/toronto/");
+							globeWeb.setEditable(false);
+							JFrame nFrame = new JFrame("Washington Post");
+							nFrame.add(new JScrollPane(globeWeb));
+							nFrame.setSize(600,600);
+							nFrame.setVisible(true);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				
+				theDailyMail.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							JEditorPane wsWeb = new JEditorPane("https://www.dailymail.co.uk/home/index.html");
+							wsWeb.setEditable(false);
+							JFrame nFrame = new JFrame("The Daily Mail");
+							nFrame.add(new JScrollPane(wsWeb));
+							nFrame.setSize(600,600);
+							nFrame.setVisible(true);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				newsFrame.getContentPane().setLayout(null);
+			}
+		});
 	// Add components based on user type
 	switch(userType)
 		{
