@@ -1,4 +1,9 @@
 itemname,itemID,numCopies,location,online,purchasable
-History of Canada,1,20,1001,true,true
-History of USA,2,20,1002,true,true
-History of Mexico,3,20,1003,true,true
+History of Canada,1,20,1001,TRUE,TRUE
+Math Textbook,101,,,,
+SOSC Textbook,2,,,,
+Huamities Textbook,3,,,,
+Physics Textbook,4,,,,
+Linear Algebra Textbook,5,,,,
+Software Design Textbook,6,,,,
+Topology,7,,,,
