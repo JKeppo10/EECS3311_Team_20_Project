@@ -38,6 +38,7 @@ public class LandingPage {
 	private User currentUser;
 	private ArrayList<Course> allCourses;
 	private ArrayList<Item> inventory;
+	private JPanel panel;
 
 	public LandingPage(User user) {
 		this.currentUser = user;
@@ -59,9 +60,12 @@ public class LandingPage {
 		frame.setResizable(false);
 
 		populateCourseList();
+	
 
 		// Customize LandingPage based on user type
 		customizeLandingPage(frame, currentUser);
+		
+		updateRented();
 
 		// Set frame visibility
 		frame.setVisible(true);
@@ -82,8 +86,70 @@ public class LandingPage {
 		}
 	}
 
+	private void updateRented() {
+		// View Of Rented Books
+		int currUserID = currentUser.getId();
+		ArrayList<String[]> itemIDs = new ArrayList<String[]>();
+		ArrayList<String[]> inventory = new ArrayList<String[]>();
+		ArrayList<String[]> users = new ArrayList<String[]>();
+		try {
+			users = MaintainUser.loadString();
+			itemIDs = MaintainUserItems.load();
+			inventory = MaintainInventory.loadString();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		// Get All Items IDs for currently rented for the corresponding user
+		ArrayList<String> currentUserItemsID = new ArrayList<String>();
+		ArrayList<String> dueDates = new ArrayList<String>();
+		for (int i = 0; i < itemIDs.size(); i++) {
+			if (itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
+				currentUserItemsID.add(itemIDs.get(i)[1]);
+				dueDates.add(itemIDs.get(i)[2]);
+			}
+		}
+		// Map All Item IDs to Names (ID, Name)
+		HashMap<String, String> inventoryMap = new HashMap<String, String>();
+		// Map Current User Items ID to Real Items in Inventory
+		for (int i = 0; i < inventory.size(); i++) {
+			inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
+		}
+		// Use Map To List Current Users Items
+		String[] currentlyRented = new String[currentUserItemsID.size()];
+		for (int i = 0; i < currentUserItemsID.size(); i++) {
+			currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); 																								
+		}
+
+		JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
+		currentlyRentedLabel.setBounds(800, 200, 120, 25);
+		panel.add(currentlyRentedLabel);
+
+		JList<String[]> currentlyRentedList = new JList(currentlyRented);
+		currentlyRentedList.setBounds(770, 230, 300, 500);
+		panel.add(currentlyRentedList);
+		
+	    //Penalty
+	    JLabel penalty = new JLabel("Penalty:");
+	    penalty.setBounds(680,230,125,25);
+	    panel.add(penalty);
+        
+	    double currentBalance = 0;
+	    for(int i = 0; i < users.size(); i++) {
+	    	if(users.get(i)[2].equals(Integer.toString(currUserID))) {
+	    		currentBalance = Double.parseDouble(users.get(i)[5]);
+	    	}
+	    }
+	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
+	    userPenalty.setBounds(680,240,50,50);
+	    panel.add(userPenalty);
+	    currentlyRentedList.repaint();
+	}
+	
+
+	
 	private void customizeLandingPage(JFrame frame, User currentUser) {
-		JPanel panel = new JPanel();
+		this.panel = new JPanel();
+		//JPanel panel = new JPanel();
 		panel.setLayout(null); // Using absolute layout
 
 		// Add common components
@@ -126,7 +192,7 @@ public class LandingPage {
 					passwordField.setEchoChar((char) 0); // Password will be visible
 					showPasswordButton.setText("Hide");
 				} else {
-					passwordField.setEchoChar('•'); // Password will be masked
+					passwordField.setEchoChar('ï¿½'); // Password will be masked
 					showPasswordButton.setText("Show");
 				}
 			}
@@ -300,14 +366,17 @@ public class LandingPage {
 			      boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
 
 			      if (!alreadyRented) {
-			        // Add user-item relation to UserItems.csv
-			        try {
-			          MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID);
-			          JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-			        } catch (IOException ex) {
-			          ex.printStackTrace();
-			          JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
-			        }
+			    	  try {
+			    	    MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID);
+			    	    JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+			    	    // Update the currentlyRentedList in the GUI (assuming you have a method to do this)
+			    	    updateRented();
+
+			    	  } catch (IOException ex) {
+			    	    ex.printStackTrace();
+			    	    JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
+			    	  }
 
 			        // Update the number of copies of the rented item (commented out for now)
 			        // ... (rest of the code for updating inventory)
@@ -319,66 +388,10 @@ public class LandingPage {
 			    }
 			  }
 			});
-		// View Of Rented Books
-        int currUserID = currentUser.getId();
-        ArrayList<String[]> itemIDs = new ArrayList<String[]>();
-        ArrayList<String[]> inventory = new ArrayList<String[]>();
-        ArrayList<String[]> users = new ArrayList<String[]>();
-        try {
-             users = MaintainUser.loadString();
-			 itemIDs = MaintainUserItems.load();
-			 inventory = MaintainInventory.loadString();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-        // Get All Items IDs for currently rented for the corresponding user
-        ArrayList<String> currentUserItemsID = new ArrayList<String>();
-        ArrayList<String> dueDates = new ArrayList<String>();
-        for(int i = 0; i < itemIDs.size(); i++) {
-        	if(itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
-        		currentUserItemsID.add(itemIDs.get(i)[1]);
-        		dueDates.add(itemIDs.get(i)[2]);
-        	}
-        }
-        // Map All Item IDs to Names (ID, Name)
-        HashMap<String, String> inventoryMap = new HashMap<String, String>();
-        // Map Current User Items ID to Real Items in Inventory
-        for(int i = 0; i < inventory.size(); i++) {
-        	inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
-        }
-        // Use Map To List Current Users Items
-        String[] currentlyRented = new String[currentUserItemsID.size()];
-       for(int i = 0; i < currentUserItemsID.size(); i++) {
-    	   currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); // Using /t doesn't work in the GUI for some reason
-       }
-       
-        JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
-	    currentlyRentedLabel.setBounds(800,200,120,25);
-	    panel.add(currentlyRentedLabel);
-	    
-	    JList<String[]> currentlyRentedList = new JList(currentlyRented);
-	    currentlyRentedList.setBounds(770,230,300,500);
-	    panel.add(currentlyRentedList);
-	    
-	    //Penalty
-	    JLabel penalty = new JLabel("Penalty:");
-	    penalty.setBounds(680,230,125,25);
-	    panel.add(penalty);
-        
-	    double currentBalance = 0;
-	    for(int i = 0; i < users.size(); i++) {
-	    	if(users.get(i)[2].equals(Integer.toString(currUserID))) {
-	    		currentBalance = Double.parseDouble(users.get(i)[5]);
-	    	}
-	    }
-	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
-	    userPenalty.setBounds(680,240,50,50);
-	    panel.add(userPenalty);
-
+		
 	// Add components based on user type
 	switch(userType)
-
-	{
+		{
 		case FACULTY:
 			addFacultyFeatures(panel);
 			break;

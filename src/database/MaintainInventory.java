@@ -10,7 +10,7 @@ import businessLogic.Items.*;
 
 public class MaintainInventory {
 
-    private static final String path = "Path";
+    private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\inventory.csv";
     
     public static ArrayList<String[]> loadString() throws IOException {
         ArrayList<String[]> inventory = new ArrayList<>();
