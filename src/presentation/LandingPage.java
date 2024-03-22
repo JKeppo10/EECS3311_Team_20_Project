@@ -46,6 +46,7 @@ public class LandingPage {
 	private ArrayList<Item> inventory;
 	private JPanel panel;
 	private Integer dueDateWarnings = 0;
+	private Integer numRentedItems;
 	private JButton rentButton;
 
 	public LandingPage(User user) {
@@ -155,6 +156,25 @@ public class LandingPage {
 	    userPenalty.setBounds(680,240,50,50);
 	    panel.add(userPenalty);
 	    
+	    int numRentedItems = currentUserItemsID.size();
+
+	    // **Number of Rented Items Label**
+	    JLabel numRentedLabel = new JLabel("Number of Rented Items: " + numRentedItems + "/10 (Max)");
+	    numRentedLabel.setBounds(770, 180, 250, 25);
+	    panel.add(numRentedLabel);
+	    
+	    if (numRentedItems >= 10) {
+	        rentButton.setText("Max items rented. Please return an item.");
+	        rentButton.setEnabled(false);
+	    } else {
+	        rentButton.setText("Rent Item");
+	        rentButton.setEnabled(true);
+	    }
+	    
+	    numRentedLabel.repaint();
+	    currentlyRentedList.repaint();
+	    
+	    currentUser.setNumRent(currentUserItemsID.size());
 	   
 		// Update the rent button based on the number of due date warnings
 	    if (dueDateWarnings >= 3) {
