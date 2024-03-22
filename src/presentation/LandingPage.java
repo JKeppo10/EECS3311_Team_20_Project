@@ -177,6 +177,11 @@ public class LandingPage {
         JButton searchButton = new JButton("Search");
         searchButton.setBounds(320, 220, 80, 25);
         panel.add(searchButton);
+        
+        // Add label for selected item
+        JLabel selectedItemLabel = new JLabel("Selected Item:");
+        selectedItemLabel.setBounds(100, 240, 200, 25);
+        panel.add(selectedItemLabel);
 
         JTextArea searchResultTextArea = new JTextArea();
         searchResultTextArea.setEditable(false);
@@ -184,7 +189,7 @@ public class LandingPage {
         scrollPane.setBounds(100, 260, 500, 200);
         panel.add(scrollPane);
 
-     // Action listener for the search button
+        // Action listener for the search button
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -251,7 +256,46 @@ public class LandingPage {
                 }
             }
         });
+        
+        // Add button to rent selected item
+        JButton rentButton = new JButton("Rent Selected Item");
+        rentButton.setBounds(420, 220, 150, 25);
+        panel.add(rentButton);
+        
+     // Action listener for the rent button
+        rentButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the selected item name from the search result text area
+                String selectedItemInfo = searchResultTextArea.getText();
+                if (!selectedItemInfo.isEmpty()) {
+                    // Extract item ID from selected item info
+                    String[] lines = selectedItemInfo.split("\n");
+                    String itemID = lines[1].split(": ")[1];
 
+                    // Update UserItems.csv
+                    try {
+                        MaintainUserItems.addUserItem(currentUser.getId(), Integer.parseInt(itemID));
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                    // Update the number of copies of the selected item
+                    try {
+                        MaintainInventory.(Integer.parseInt(itemID), -1);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(panel, "Error updating number of copies.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                    // Notify the user
+                    JOptionPane.showMessageDialog(panel, "Item rented successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
         
 	    // Add components based on user type
 	    switch (userType) {
