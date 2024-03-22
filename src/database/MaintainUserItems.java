@@ -53,7 +53,12 @@ public class MaintainUserItems {
             System.out.println("User-item connection does not exist.");
         }
     }
-
+    
+	public static boolean alreadyRented(Integer id, int parseInt) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
     // Example usage
     public static void main(String[] args) throws IOException {
         // Load user-item connections
@@ -76,5 +81,7 @@ public class MaintainUserItems {
         // Attempt to remove non-existing user-item connection
         removeUserItem("5", "105");
     }
+
+
 }
 

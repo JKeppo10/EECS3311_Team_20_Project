@@ -285,40 +285,38 @@ public class LandingPage {
 		
 		// Action listener for the rent button
 		rentButton.addActionListener(new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-		        // Get the selected item information from the search result text area
-		        String selectedItemInfo = searchResultTextArea.getText();
+			  @Override
+			  public void actionPerformed(ActionEvent e) {
+			    String selectedItemInfo = searchResultTextArea.getText();
 
-		        if (!selectedItemInfo.isEmpty()) {
-		            // Extract item ID from selected item info
-		            String[] lines = selectedItemInfo.split("\n");
-		            String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
+			    if (!selectedItemInfo.isEmpty()) {
+			      // Extract item ID from selected item info
+			      String[] lines = selectedItemInfo.split("\n");
+			      String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
 
-		            // Add user-item relation to UserItems.csv
-		            try {
-		                MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID);
-		                JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-		            } catch (IOException ex) {
-		                ex.printStackTrace();
-		                JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
-		            }
+			      // Check if user already rented this item
+			      boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
 
-		            // Update the number of copies of the rented item (commented out for now)
-		            // This functionality requires additional logic and error handling, so it's left out for now.
-		            // You'll need to implement a method in MaintainInventory to decrement the number of copies
-		            // and handle potential errors (e.g., insufficient stock).
-		            // try {
-		            //     inventory.updateItemQuantity(Integer.parseInt(itemID), -1);
-		            // } catch (IOException ex) {
-		            //     ex.printStackTrace();
-		            //     JOptionPane.showMessageDialog(panel, "Error updating number of copies.", "Error", JOptionPane.ERROR_MESSAGE);
-		            // }
-		        } else {
-		            JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-		        }
-		    }
-		});
+			      if (!alreadyRented) {
+			        // Add user-item relation to UserItems.csv
+			        try {
+			          MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID);
+			          JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+			        } catch (IOException ex) {
+			          ex.printStackTrace();
+			          JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
+			        }
+
+			        // Update the number of copies of the rented item (commented out for now)
+			        // ... (rest of the code for updating inventory)
+			      } else {
+			        JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
+			      }
+			    } else {
+			      JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
+			    }
+			  }
+			});
 
 	// Add components based on user type
 	switch(userType)
