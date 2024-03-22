@@ -9,7 +9,7 @@ import com.csvreader.CsvWriter;
 
 public class MaintainUserCourse {
 
-    private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\usercourse.csv";
+    private static final String path = "Path";
 
     public static ArrayList<String[]> load() throws IOException {
         ArrayList<String[]> userCourses = new ArrayList<>();

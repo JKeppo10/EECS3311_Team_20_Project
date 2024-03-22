@@ -20,8 +20,8 @@ import businessLogic.Users.*;
 public class MaintainUser {
 
 	public ArrayList<User> users = new ArrayList<User>();
-	private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\user.csv";
-	private static final String path2 = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\university.csv";
+	private static final String path = "Path";
+	private static final String path2 = "Path";
 	private int idCounter;
 	
 	private UserFactory userFactory;
@@ -33,7 +33,17 @@ public class MaintainUser {
         universityEmailsAndTypes = new HashMap<>();
 		load();
 	}
-
+	public static ArrayList<String[]> loadString() throws IOException {
+        ArrayList<String[]> users = new ArrayList<>();
+        CsvReader reader = new CsvReader(path);
+        reader.readHeaders();
+        while (reader.readRecord()) {
+            String[] userItem = {reader.get("name"), reader.get("password"), reader.get("id"), reader.get("email"), reader.get("type"), reader.get("Balance")};
+            users.add(userItem);
+        }
+        reader.close();
+        return users;
+    }
 	public void load() throws Exception {
 		CsvReader reader = new CsvReader(path);
 		reader.readHeaders();
