@@ -8,7 +8,7 @@ import java.io.FileWriter;
 
 public class MaintainInventory {
 
-    private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\inventory.csv";
+    private static final String path = "Path";
 
     public static ArrayList<String[]> load() throws IOException {
         ArrayList<String[]> inventory = new ArrayList<>();

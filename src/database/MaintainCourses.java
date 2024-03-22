@@ -13,7 +13,7 @@ import businessLogic.Users.UserTypes;
 public class MaintainCourses {
 	
     private ArrayList<Course> courses = new ArrayList<>();
-    private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\courses.csv";
+    private static final String path = "C:\\Users\\sanja\\Downloads\\EECS3311_Team_20_Project-main (2)\\EECS3311_Team_20_Project-main\\CSVs\\courses.csv";
 
     public void load() throws Exception {
         CsvReader reader = new CsvReader(path);

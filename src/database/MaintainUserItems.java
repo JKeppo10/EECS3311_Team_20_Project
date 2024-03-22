@@ -8,14 +8,14 @@ import java.io.FileWriter;
 
 public class MaintainUserItems {
 
-    private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\useritems.csv";
+    private static final String path = "Path";
 
     public static ArrayList<String[]> load() throws IOException {
         ArrayList<String[]> userItems = new ArrayList<>();
         CsvReader reader = new CsvReader(path);
         reader.readHeaders();
         while (reader.readRecord()) {
-            String[] userItem = { reader.get("userID"), reader.get("itemID") };
+            String[] userItem = { reader.get("userID"), reader.get("itemID"), reader.get("dueDate") };
             userItems.add(userItem);
         }
         reader.close();

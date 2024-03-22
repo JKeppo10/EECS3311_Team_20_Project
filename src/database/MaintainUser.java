@@ -2,6 +2,7 @@ package database;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
@@ -12,9 +13,20 @@ import businessLogic.Users.UserTypes;
 public class MaintainUser {
 
 	public ArrayList<User> users = new ArrayList<User>();
-	private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\user.csv";
+	private static final String path = "Path";
 	private int idCounter;
-
+	
+	public static ArrayList<String[]> loadString() throws IOException {
+        ArrayList<String[]> users = new ArrayList<>();
+        CsvReader reader = new CsvReader(path);
+        reader.readHeaders();
+        while (reader.readRecord()) {
+            String[] userItem = {reader.get("name"), reader.get("password"), reader.get("id"), reader.get("email"), reader.get("type"), reader.get("Balance")};
+            users.add(userItem);
+        }
+        reader.close();
+        return users;
+    }
 	public void load() throws Exception {
 		CsvReader reader = new CsvReader(path);
 		reader.readHeaders();
