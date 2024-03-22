@@ -1,5 +1,7 @@
 package businessLogic.Items;
 
+import businessLogic.Users.UserTypes;
+
 public class Item {
 	private String name;
 	private int numCopies;
@@ -40,9 +42,14 @@ public class Item {
 	public void setLocation(String location) {
 		this.location = location;
 	}
-
-	public void setPurchasability(boolean purchasable) {
-		this.purchasable = purchasable;
+	
+	public void setPurchasability(boolean purchasable, UserTypes type) throws Exception {
+		if(type == UserTypes.FACULTY) {
+			this.purchasable = purchasable;
+		}
+		else {
+			throw new Exception("Unauthorized User.");
+		}
 	}
 
 	public String getName() {
