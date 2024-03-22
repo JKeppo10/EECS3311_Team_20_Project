@@ -33,10 +33,7 @@ public class Faculty extends User {
         }
 
         public Faculty build() {
-            // Assuming UserTypes.FACULTY is defined
             return new Faculty(name, pw, id, email, UserTypes.FACULTY);
         }
     }
-
-    // Any additional methods specific to the Faculty class can be added here
 }

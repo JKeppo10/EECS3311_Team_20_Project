@@ -33,7 +33,7 @@ public class Item {
 		this.online = online;
 	}
 
-	public void setUniqueIdNumber(int uniqueIdNumber) {
+	public void setUniqueId(int uniqueIdNumber) {
 		this.uniqueId = uniqueIdNumber;
 	}
 
@@ -57,7 +57,7 @@ public class Item {
 		return this.online;
 	}
 
-	public int getUniqueIdNumber() {
+	public int getUniqueId() {
 		return this.uniqueId;
 	}
 
