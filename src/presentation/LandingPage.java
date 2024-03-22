@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.awt.event.ActionEvent;
 
 import database.*;
@@ -183,34 +184,75 @@ public class LandingPage {
         scrollPane.setBounds(100, 260, 500, 200);
         panel.add(scrollPane);
 
-        // Add action listener to the search button
+     // Action listener for the search button
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchTerm = searchBar.getText().trim();
-                if (!searchTerm.isEmpty()) {
+                String itemName = searchBar.getText().trim();
+                if (!itemName.isEmpty()) {
                     try {
-                        ArrayList<String[]> searchResult = MaintainInventory.load();
-                        StringBuilder resultText = new StringBuilder();
-                        for (String[] item : searchResult) {
-                            if (item[0].toLowerCase().contains(searchTerm.toLowerCase())) {
-                                resultText.append("Item Name: ").append(item[0]).append(", Item ID: ").append(item[1]).append("\n");
+                        ArrayList<String[]> searchResults = MaintainInventory.load();
+                        ArrayList<String[]> matchingItems = new ArrayList<>();
+                        for (String[] item : searchResults) {
+                            if (item[0].toLowerCase().contains(itemName.toLowerCase())) {
+                                matchingItems.add(item);
                             }
                         }
-                        if (resultText.length() == 0) {
-                            resultText.append("No items found.");
+                        // Debugging line to print matching items
+                        System.out.println("Matching Items: " + matchingItems);
+                        
+                        if (!matchingItems.isEmpty()) {
+                            // Display selectable search results
+                            String[] options = new String[matchingItems.size()];
+                            for (int i = 0; i < matchingItems.size(); i++) {
+                                options[i] = matchingItems.get(i)[0] + " (ID: " + matchingItems.get(i)[1] + ")";
+                            }
+                            // Debugging line to print selected option from JOptionPane
+                            String selectedOption = (String) JOptionPane.showInputDialog(panel, "Select an item:", "Item Search Results", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                            System.out.println("Selected Option: " + selectedOption);
+                            
+                            if (selectedOption != null) {
+                                // Get the selected item name from the selected option
+                                String[] parts = selectedOption.split("\\(ID:|\\)");
+                                String selectedItemName = parts[0].trim();
+                                System.out.println("Selected Item Name: " + selectedItemName);
+                                // Debugging output for matchingItems
+                                System.out.println("Matching Items:");
+                                for (String[] item : matchingItems) {
+                                    System.out.println(Arrays.toString(item));
+                                }
+                                // Find the selected item in the matching items list
+                                for (String[] item : matchingItems) {
+                                    if (item[0].equals(selectedItemName)) {
+                                        // Display all attributes of the selected item in the search result text area
+                                        StringBuilder itemInfo = new StringBuilder();
+                                        itemInfo.append("Title: ").append(item[0]).append("\n");
+                                        itemInfo.append("ID: ").append(item[1]).append("\n");
+                                        itemInfo.append("Quantity Available: ").append(item[2]).append("\n");
+                                        itemInfo.append("Location: ").append(item[3]).append("\n");
+                                        itemInfo.append("Available Online: ").append(item[4]).append("\n");
+                                        itemInfo.append("Available for Purchase: ").append(item[5]).append("\n");
+                                        searchResultTextArea.setText(itemInfo.toString());
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                        } else {
+                            // Item not found
+                            JOptionPane.showMessageDialog(panel, "No matching items found.", "Item Search", JOptionPane.INFORMATION_MESSAGE);
                         }
-                        searchResultTextArea.setText(resultText.toString());
                     } catch (IOException ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(panel, "Error loading inventory.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(panel, "Please enter a search term.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(panel, "Please enter an item name.", "Item Search", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
 
+        
 	    // Add components based on user type
 	    switch (userType) {
 	        case FACULTY:
