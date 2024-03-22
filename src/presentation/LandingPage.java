@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -353,41 +354,43 @@ public class LandingPage {
 		
 		// Action listener for the rent button
 		rentButton.addActionListener(new ActionListener() {
-			  @Override
-			  public void actionPerformed(ActionEvent e) {
-			    String selectedItemInfo = searchResultTextArea.getText();
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        String selectedItemInfo = searchResultTextArea.getText();
 
-			    if (!selectedItemInfo.isEmpty()) {
-			      // Extract item ID from selected item info
-			      String[] lines = selectedItemInfo.split("\n");
-			      String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
+		        if (!selectedItemInfo.isEmpty()) {
+		            // Extract item ID from selected item info
+		            String[] lines = selectedItemInfo.split("\n");
+		            String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
 
-			      // Check if user already rented this item
-			      boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
+		            // Check if user already rented this item
+		            boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
 
-			      if (!alreadyRented) {
-			    	  try {
-			    	    MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID);
-			    	    JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+		            if (!alreadyRented) {
+		                try {
+		                    // Calculate due date (current date + 30 days)
+		                    LocalDate today = LocalDate.now(); // Assuming you have access to LocalDate from java.time
+		                    LocalDate dueDate = today.plusDays(30);
 
-			    	    // Update the currentlyRentedList in the GUI (assuming you have a method to do this)
-			    	    updateRented();
+		                    MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID, dueDate.toString()); // Add due date as third argument
 
-			    	  } catch (IOException ex) {
-			    	    ex.printStackTrace();
-			    	    JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
-			    	  }
+		                    JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
-			        // Update the number of copies of the rented item (commented out for now)
-			        // ... (rest of the code for updating inventory)
-			      } else {
-			        JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-			      }
-			    } else {
-			      JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-			    }
-			  }
-			});
+		                    // Update the currentlyRentedList in the GUI
+		                    updateRented();
+
+		                } catch (IOException ex) {
+		                    ex.printStackTrace();
+		                    JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
+		                }
+		            } else {
+		                JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
+		            }
+		        } else {
+		            JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
+		        }
+		    }
+		});
 		
 	// Add components based on user type
 	switch(userType)

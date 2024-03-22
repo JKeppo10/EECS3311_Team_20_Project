@@ -31,13 +31,13 @@ public class MaintainUserItems {
         writer.close();
     }
 
-    public static void addUserItem(String userID, String itemID) throws IOException {
+    public static void addUserItem(String userID, String itemID, String dueDate) throws IOException {
         ArrayList<String[]> userItems = load();
         boolean exists = userItems.stream().anyMatch(ui -> ui[0].equals(userID) && ui[1].equals(itemID));
         if (exists) {
             System.out.println("User-item connection already exists.");
         } else {
-            userItems.add(new String[] { userID, itemID });
+            userItems.add(new String[] { userID, itemID, dueDate });
             update(userItems);
             System.out.println("User-item connection added successfully.");
         }
@@ -70,10 +70,10 @@ public class MaintainUserItems {
         }
 
         // Add a new user-item connection
-        addUserItem("4", "101");
+        addUserItem("4", "101", "01/01/2024");
 
         // Attempt to add existing user-item connection
-        addUserItem("1", "101");
+        addUserItem("1", "101", "02/02/2024");
 
         // Remove an existing user-item connection
         removeUserItem("1", "101");
