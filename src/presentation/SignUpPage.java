@@ -32,8 +32,19 @@ public class SignUpPage {
 	private JButton signUpButton;
 	private JButton logInButton;
 	private JComboBox<UserTypes> userTypeComboBox;
+	
+	private MaintainUser maintainUser;
 
 	public SignUpPage() {
+		
+		//intialize database
+        maintainUser = new MaintainUser(); // Initialize MaintainUser instance
+        try {
+            maintainUser.load(); // Load existing data
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error loading existing user data: " + ex.getMessage());
+        }
+        
 		// Initialize the frame
 		JFrame frame = new JFrame("Sign Up Page");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,36 +109,32 @@ public class SignUpPage {
 		frame.setVisible(true);
 
 		// Action listener for signup button
-		signUpButton.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        String username = userNameField.getText();
-		        String password = new String(passwordField.getPassword());
-		        String email = emailField.getText();
-		        UserTypes userType = (UserTypes) userTypeComboBox.getSelectedItem();
+	    signUpButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            String username = userNameField.getText();
+	            String password = new String(passwordField.getPassword());
+	            String email = emailField.getText();
+	            UserTypes userType = (UserTypes) userTypeComboBox.getSelectedItem();
 
-		        // Check if username or email already exists
-		        MaintainUser maintainUser = new MaintainUser();
-		        try {
-		            maintainUser.load();
-		            for (User user : maintainUser.users) {
-		                if (user.getName().equalsIgnoreCase(username) || user.getEmail().equalsIgnoreCase(email)) {
-		                    JOptionPane.showMessageDialog(null, "Username or Email already in use.");
-		                    return;
-		                }
-		            }
-		            // If username and email are unique, add the new user
-		            User newUser = new User(username, password, email, userType);
-		            String addUserResult = maintainUser.addUser(newUser);
-		            JOptionPane.showMessageDialog(null, addUserResult);
-		            // Close the current signup frame
-		            frame.dispose();
-		            // Open the login frame
-		            new LoginPage();
-		        } catch (Exception ex) {
-		            JOptionPane.showMessageDialog(null, "Error loading user data: " + ex.getMessage());
-		        }
-		    }
-		});
+	            // Validate password strength using MaintainUser method
+	            if (!maintainUser.isStrongPassword(password)) {
+	                JOptionPane.showMessageDialog(null, "Password is not strong enough. It must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+	                return; // Stop signup process
+	            }
+
+	            // Try to add user to database
+	            try {
+	                String addUserResult = maintainUser.addUser(username, password, email, userType);
+	                JOptionPane.showMessageDialog(null, addUserResult);
+	                // Close the current signup frame
+	                frame.dispose();
+	                // Open the login frame
+	                new LoginPage();
+	            } catch (Exception ex) {
+	                JOptionPane.showMessageDialog(null, "Error adding user to the database: " + ex.getMessage());
+	            }
+	        }
+	    });
 
 		// Action listener for login button
 		logInButton.addActionListener(new ActionListener() {
