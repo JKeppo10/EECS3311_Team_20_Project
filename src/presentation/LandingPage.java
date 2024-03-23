@@ -476,6 +476,7 @@ public class LandingPage {
 						}
 					}
 				});
+
 				
 				globeAndMail.addActionListener(new ActionListener() {
 					@Override
@@ -511,6 +512,23 @@ public class LandingPage {
 				newsFrame.getContentPane().setLayout(null);
 			}
 		});
+	//store UI
+		JButton bookStore = new JButton("Visit Store");
+		
+		store.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						try {
+							JEditorPane storeWeb = new JEditorPane("Yorku Store");
+							storeWeb.setEditable(false);
+							JFrame storeFrame = new JFrame("Store");
+							storeFrame.add(new JScrollPane(storeWeb));
+							storeFrame.setSize(600,600);
+							storeFrame.setVisible(true);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
 	// Add components based on user type
 	switch(userType)
 		{
