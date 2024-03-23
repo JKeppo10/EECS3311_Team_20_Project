@@ -1,4 +1,5 @@
-itemname,itemID,numCopies,location,online,purchasable
-History of Canada,1,20,1001,true,true
-History of USA,2,20,1002,true,true
-History of Mexico,3,20,1003,true,true
+itemname,itemID,numCopies,location,online,purchasable,type
+History of Canada,1,20,1001,TRUE,TRUE,Textbook
+History of USA,2,20,1002,TRUE,TRUE,Textbook
+History of Mexico,3,20,1003,TRUE,TRUE,Self
+XXX,4,20,1004,TRUE,TRUE,Self
