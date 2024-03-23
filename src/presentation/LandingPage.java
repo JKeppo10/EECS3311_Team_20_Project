@@ -53,15 +53,14 @@ public class LandingPage {
 	public LandingPage(User user) {
 		this.currentUser = user;
 		this.userType = user.getUserType();
-		
-        try {
-            MaintainUser maintainUser = new MaintainUser(); // Initialize MaintainUser instance
-            MaintainInventory maintainInventory = new MaintainInventory(); //Initialize MaintainInventory instance
-            
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error loading existing user or inventory data: " + ex.getMessage());
-        }
-        
+
+		try {
+			MaintainUser maintainUser = new MaintainUser(); // Initialize MaintainUser instance
+			MaintainInventory maintainInventory = new MaintainInventory(); // Initialize MaintainInventory instance
+
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, "Error loading existing user or inventory data: " + ex.getMessage());
+		}
 
 		// Initialize the frame
 		JFrame frame = new JFrame("Landing Page");
@@ -70,11 +69,10 @@ public class LandingPage {
 		frame.setResizable(false);
 
 		populateCourseList();
-	
 
 		// Customize LandingPage based on user type
 		customizeLandingPage(frame, currentUser);
-		
+
 		updateRented();
 
 		// Set frame visibility
@@ -98,105 +96,108 @@ public class LandingPage {
 
 	private void updateRented() {
 		int currUserID = currentUser.getId();
-        ArrayList<String[]> itemIDs = new ArrayList<String[]>();
-        ArrayList<String[]> inventory = new ArrayList<String[]>();
-        ArrayList<String[]> users = new ArrayList<String[]>();
-        try {
-             users = MaintainUser.loadString();
-			 itemIDs = MaintainUserItems.load();
-			 inventory = MaintainInventory.loadString();
+		ArrayList<String[]> itemIDs = new ArrayList<String[]>();
+		ArrayList<String[]> inventory = new ArrayList<String[]>();
+		ArrayList<String[]> users = new ArrayList<String[]>();
+		try {
+			users = MaintainUser.loadString();
+			itemIDs = MaintainUserItems.load();
+			inventory = MaintainInventory.loadString();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-        // Get All Items IDs for currently rented for the corresponding user
-        ArrayList<String> currentUserItemsID = new ArrayList<String>();
-        ArrayList<String> dueDates = new ArrayList<String>();
-        for(int i = 0; i < itemIDs.size(); i++) {
-        	if(itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
-        		currentUserItemsID.add(itemIDs.get(i)[1]);
-        		dueDates.add(itemIDs.get(i)[2]);
-        	}
-        }
-        // Map All Item IDs to Names (ID, Name)
-        HashMap<String, String> inventoryMap = new HashMap<String, String>();
-        // Map Current User Items ID to Real Items in Inventory
-        for(int i = 0; i < inventory.size(); i++) {
-        	inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
-        }
-        // Use Map To List Current Users Items
-        String[] currentlyRented = new String[currentUserItemsID.size()];
-       for(int i = 0; i < currentUserItemsID.size(); i++) {
-    	   currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); // Using /t doesn't work in the GUI for some reason
-    	   if(differenceDays(dueDates.get(i)) <= 0) {
-    		   currentlyRented[i] += " (DUE DATE WARNING)";
-    		   dueDateWarnings++;
-    	   }
-    	   
-       }
-       
-        JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
-	    currentlyRentedLabel.setBounds(800,200,120,25);
-	    panel.add(currentlyRentedLabel);
-	    
-	    JList<String[]> currentlyRentedList = new JList(currentlyRented);
-	    currentlyRentedList.setBounds(730,230,420,500);
-	    panel.add(currentlyRentedList);
-	    
-	    //Penalty
-	    JLabel penalty = new JLabel("Penalty:");
-	    penalty.setBounds(680,230,125,25);
-	    panel.add(penalty);
-        
-	    double currentBalance = 0;
-	    for(int i = 0; i < dueDates.size(); i++) {
-	    	if(differenceDays(dueDates.get(i)) < 0) {
-	    		currentBalance += 0.5*(-1 * differenceDays(dueDates.get(i)));
-	    	}
-	    }
-	    JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
-	    userPenalty.setBounds(680,240,50,50);
-	    panel.add(userPenalty);
-	    
-	    int numRentedItems = currentUserItemsID.size();
+		// Get All Items IDs for currently rented for the corresponding user
+		ArrayList<String> currentUserItemsID = new ArrayList<String>();
+		ArrayList<String> dueDates = new ArrayList<String>();
+		for (int i = 0; i < itemIDs.size(); i++) {
+			if (itemIDs.get(i)[0].equals(Integer.toString(currUserID))) {
+				currentUserItemsID.add(itemIDs.get(i)[1]);
+				dueDates.add(itemIDs.get(i)[2]);
+			}
+		}
+		// Map All Item IDs to Names (ID, Name)
+		HashMap<String, String> inventoryMap = new HashMap<String, String>();
+		// Map Current User Items ID to Real Items in Inventory
+		for (int i = 0; i < inventory.size(); i++) {
+			inventoryMap.put(inventory.get(i)[1], inventory.get(i)[0]);
+		}
+		// Use Map To List Current Users Items
+		String[] currentlyRented = new String[currentUserItemsID.size()];
+		for (int i = 0; i < currentUserItemsID.size(); i++) {
+			currentlyRented[i] = inventoryMap.get(currentUserItemsID.get(i)) + ", Due: " + dueDates.get(i); // Using /t
+																											// doesn't
+																											// work in
+																											// the GUI
+																											// for some
+																											// reason
+			if (differenceDays(dueDates.get(i)) <= 0) {
+				currentlyRented[i] += " (DUE DATE WARNING)";
+				dueDateWarnings++;
+			}
 
-	    // **Number of Rented Items Label**
-	    JLabel numRentedLabel = new JLabel("Number of Rented Items: " + numRentedItems + "/10 (Max)");
-	    numRentedLabel.setBounds(770, 180, 250, 25);
-	    panel.add(numRentedLabel);
-	    
-	    if (numRentedItems >= 10) {
-	        rentButton.setText("Max items rented. Please return an item.");
-	        rentButton.setEnabled(false);
-	    } else {
-	        rentButton.setText("Rent Item");
-	        rentButton.setEnabled(true);
-	    }
-	    
-	    numRentedLabel.repaint();
-	    currentlyRentedList.repaint();
-	    
-	    currentUser.setNumRent(currentUserItemsID.size());
-	   
+		}
+
+		JLabel currentlyRentedLabel = new JLabel("Currently Rented: ");
+		currentlyRentedLabel.setBounds(800, 200, 120, 25);
+		panel.add(currentlyRentedLabel);
+
+		JList<String[]> currentlyRentedList = new JList(currentlyRented);
+		currentlyRentedList.setBounds(730, 230, 420, 500);
+		panel.add(currentlyRentedList);
+
+		// Penalty
+		JLabel penalty = new JLabel("Penalty:");
+		penalty.setBounds(680, 230, 125, 25);
+		panel.add(penalty);
+
+		double currentBalance = 0;
+		for (int i = 0; i < dueDates.size(); i++) {
+			if (differenceDays(dueDates.get(i)) < 0) {
+				currentBalance += 0.5 * (-1 * differenceDays(dueDates.get(i)));
+			}
+		}
+		JLabel userPenalty = new JLabel(String.format("$%,.2f", currentBalance));
+		userPenalty.setBounds(680, 240, 50, 50);
+		panel.add(userPenalty);
+
+		int numRentedItems = currentUserItemsID.size();
+
+		// **Number of Rented Items Label**
+		JLabel numRentedLabel = new JLabel("Number of Rented Items: " + numRentedItems + "/10 (Max)");
+		numRentedLabel.setBounds(770, 180, 250, 25);
+		panel.add(numRentedLabel);
+
+		if (numRentedItems >= 10) {
+			rentButton.setText("Max items rented. Please return an item.");
+			rentButton.setEnabled(false);
+		} else {
+			rentButton.setText("Rent Item");
+			rentButton.setEnabled(true);
+		}
+
+		numRentedLabel.repaint();
+		currentlyRentedList.repaint();
+
+		currentUser.setNumRent(currentUserItemsID.size());
+
 		// Update the rent button based on the number of due date warnings
-	    if (dueDateWarnings >= 3) {
-	        rentButton.setText("Please resolve due date warnings.");
-	        rentButton.setEnabled(false);
-	    } else if (currentUserItemsID.size() < 10) {
-	        rentButton.setText("Rent Item");
-	        rentButton.setEnabled(true);
-	    } else {
-	        rentButton.setText("Max items rented. Please return an item.");
-	        rentButton.setEnabled(false);
-	    }
-	    
-	    currentlyRentedList.repaint();
-	}
-	
+		if (dueDateWarnings >= 3) {
+			rentButton.setText("Please resolve due date warnings.");
+			rentButton.setEnabled(false);
+		} else if (currentUserItemsID.size() < 10) {
+			rentButton.setText("Rent Item");
+			rentButton.setEnabled(true);
+		} else {
+			rentButton.setText("Max items rented. Please return an item.");
+			rentButton.setEnabled(false);
+		}
 
-	
+		currentlyRentedList.repaint();
+	}
+
 	private void customizeLandingPage(JFrame frame, User currentUser) {
 		this.panel = new JPanel();
-		//JPanel panel = new JPanel();
+		// JPanel panel = new JPanel();
 		panel.setLayout(null); // Using absolute layout
 
 		// Add common components
@@ -323,11 +324,11 @@ public class LandingPage {
 						inventory = MaintainInventory.load();
 						ArrayList<Item> matchingItems = new ArrayList<>();
 						for (Item item : inventory) {
-							  if (item.getName().toLowerCase().contains(itemName.toLowerCase())) {
-							    matchingItems.add(item);
-							  }
+							if (item.getName().toLowerCase().contains(itemName.toLowerCase())) {
+								matchingItems.add(item);
 							}
-						
+						}
+
 						// Debugging line to print matching items
 						System.out.println("Matching Items: " + matchingItems);
 
@@ -336,10 +337,11 @@ public class LandingPage {
 							String[] options = new String[matchingItems.size()]; // Create an array to hold options
 
 							for (int i = 0; i < matchingItems.size(); i++) {
-							  Item item = matchingItems.get(i);  // Get the Item object from the ArrayList
-							  options[i] = item.getName() + " (ID: " + item.getUniqueId() + ")";  // Construct the option string
+								Item item = matchingItems.get(i); // Get the Item object from the ArrayList
+								options[i] = item.getName() + " (ID: " + item.getUniqueId() + ")"; // Construct the
+																									// option string
 							}
-							
+
 							// Debugging line to print selected option from JOptionPane
 							String selectedOption = (String) JOptionPane.showInputDialog(panel, "Select an item:",
 									"Item Search Results", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
@@ -352,26 +354,28 @@ public class LandingPage {
 								System.out.println("Selected Item Name: " + selectedItemName);
 								// Debugging output for matchingItems
 								System.out.println("Matching Items:");
-								
+
 								// Print information for each item (optional for debugging)
 								// for (Item item : matchingItems) {
-							    // System.out.println(item); // Output depends on Item's toString implementation
+								// System.out.println(item); // Output depends on Item's toString implementation
 								// }
 
 								// Find the selected item in the matching items list
 								for (Item item : matchingItems) {
-								    if (item.getName().equals(selectedItemName)) {
-								        // Display all attributes of the selected item in the search result text area
-								        StringBuilder itemInfo = new StringBuilder();
-								        itemInfo.append("Title: ").append(item.getName()).append("\n");
-								        itemInfo.append("ID: ").append(item.getUniqueId()).append("\n");
-								        itemInfo.append("Quantity Available: ").append(item.getNumCopies()).append("\n");
-								        itemInfo.append("Location: ").append(item.getLocation()).append("\n");
-								        itemInfo.append("Available Online: ").append(item.getOnline()).append("\n");
-								        itemInfo.append("Available for Purchase: ").append(item.getPurchasability()).append("\n");
-								        searchResultTextArea.setText(itemInfo.toString());
-								        break;
-								    }
+									if (item.getName().equals(selectedItemName)) {
+										// Display all attributes of the selected item in the search result text area
+										StringBuilder itemInfo = new StringBuilder();
+										itemInfo.append("Title: ").append(item.getName()).append("\n");
+										itemInfo.append("ID: ").append(item.getUniqueId()).append("\n");
+										itemInfo.append("Quantity Available: ").append(item.getNumCopies())
+												.append("\n");
+										itemInfo.append("Location: ").append(item.getLocation()).append("\n");
+										itemInfo.append("Available Online: ").append(item.getOnline()).append("\n");
+										itemInfo.append("Available for Purchase: ").append(item.getPurchasability())
+												.append("\n");
+										searchResultTextArea.setText(itemInfo.toString());
+										break;
+									}
 								}
 							}
 
@@ -397,101 +401,105 @@ public class LandingPage {
 		rentButton.setBounds(420, 220, 150, 25);
 		panel.add(rentButton);
 
-		
 		// Action listener for the rent button
 		rentButton.addActionListener(new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-		        String selectedItemInfo = searchResultTextArea.getText();
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedItemInfo = searchResultTextArea.getText();
 
-		        if (!selectedItemInfo.isEmpty()) {
-		            // Extract item ID from selected item info
-		            String[] lines = selectedItemInfo.split("\n");
-		            String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
+				if (!selectedItemInfo.isEmpty()) {
+					// Extract item ID from selected item info
+					String[] lines = selectedItemInfo.split("\n");
+					String itemID = lines[1].split(": ")[1]; // Assuming line 1 contains "ID: " followed by the ID
 
-		            // Check if user already rented this item
-		            boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(), Integer.parseInt(itemID));
+					// Check if user already rented this item
+					boolean alreadyRented = MaintainUserItems.alreadyRented(currentUser.getId(),
+							Integer.parseInt(itemID));
 
-		            if (!alreadyRented) {
-		                try {
-		                    // Calculate due date (current date + 30 days)
-		                    LocalDate today = LocalDate.now(); // Assuming you have access to LocalDate from java.time
-		                    LocalDate dueDate = today.plusDays(30);
+					if (!alreadyRented) {
+						try {
+							// Calculate due date (current date + 30 days)
+							LocalDate today = LocalDate.now(); // Assuming you have access to LocalDate from java.time
+							LocalDate dueDate = today.plusDays(30);
 
-		                    MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID, dueDate.toString()); // Add due date as third argument
+							MaintainUserItems.addUserItem(String.valueOf(currentUser.getId()), itemID,
+									dueDate.toString()); // Add due date as third argument
 
-		                    JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(panel, "Item rented successfully!", "Success",
+									JOptionPane.INFORMATION_MESSAGE);
 
-		                    // Update the currentlyRentedList in the GUI
-		                    updateRented();
+							// Update the currentlyRentedList in the GUI
+							updateRented();
 
-		                } catch (IOException ex) {
-		                    ex.printStackTrace();
-		                    JOptionPane.showMessageDialog(panel, "Error renting item.", "Error", JOptionPane.ERROR_MESSAGE);
-		                }
-		            } else {
-		                JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-		            }
-		        } else {
-		            JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item", JOptionPane.INFORMATION_MESSAGE);
-		        }
-		    }
+						} catch (IOException ex) {
+							ex.printStackTrace();
+							JOptionPane.showMessageDialog(panel, "Error renting item.", "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(panel, "You have already rented this item.", "Rent Item",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(panel, "Please select an item to rent.", "Rent Item",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
 		});
 		// Logic To Get List
-				int currUserID = currentUser.getId();
-		        ArrayList<String[]> itemIDs = new ArrayList<String[]>();
-		        ArrayList<String[]> inventory = new ArrayList<String[]>();
-		        ArrayList<String[]> users = new ArrayList<String[]>();
-		        try {
-		             users = MaintainUser.loadString();
-					 itemIDs = MaintainUserItems.load();
-					 inventory = MaintainInventory.loadString();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-		        ArrayList<String> highPrioListX = new ArrayList<String>();
-		        ArrayList<String> lowPrioListX = new ArrayList<String>();
-		        
-		        for(int i = 0; i < inventory.size(); i++) {
-		        	if(inventory.get(i)[6].toLowerCase().equals("textbook")) {
-		        		highPrioListX.add(inventory.get(i)[0]);
-		        	}
-		        	else {
-		        		lowPrioListX.add(inventory.get(i)[0]);
-		        	}
-		        }
-		        String[] highPrioList = new String[highPrioListX.size()];
-		        String[] lowPrioList = new String[lowPrioListX.size()];
-		        for(int i = 0; i < highPrioListX.size(); i++) {
-		        	highPrioList[i] = highPrioListX.get(i);
-		        }
-		        for(int i = 0; i < lowPrioListX.size(); i++) {
-		        	lowPrioList[i] = lowPrioListX.get(i);
-		        }
-		//Newsletter Button
+		int currUserID = currentUser.getId();
+		ArrayList<String[]> itemIDs = new ArrayList<String[]>();
+		ArrayList<String[]> inventory = new ArrayList<String[]>();
+		ArrayList<String[]> users = new ArrayList<String[]>();
+		try {
+			users = MaintainUser.loadString();
+			itemIDs = MaintainUserItems.load();
+			inventory = MaintainInventory.loadString();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		ArrayList<String> highPrioListX = new ArrayList<String>();
+		ArrayList<String> lowPrioListX = new ArrayList<String>();
+
+		for (int i = 0; i < inventory.size(); i++) {
+			if (inventory.get(i)[6].toLowerCase().equals("textbook")) {
+				highPrioListX.add(inventory.get(i)[0]);
+			} else {
+				lowPrioListX.add(inventory.get(i)[0]);
+			}
+		}
+		String[] highPrioList = new String[highPrioListX.size()];
+		String[] lowPrioList = new String[lowPrioListX.size()];
+		for (int i = 0; i < highPrioListX.size(); i++) {
+			highPrioList[i] = highPrioListX.get(i);
+		}
+		for (int i = 0; i < lowPrioListX.size(); i++) {
+			lowPrioList[i] = lowPrioListX.get(i);
+		}
+		// Newsletter Button
 		JButton newsletter = new JButton("Newsletter Subscriptions");
 		newsletter.setBounds(10, 500, 200, 30);
 		panel.add(newsletter);
-		
+
 		newsletter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrame newsFrame = new JFrame("Newsletter Subcriptions.");
 				newsFrame.setVisible(true);
-				newsFrame.setSize(500,500);
-				
+				newsFrame.setSize(500, 500);
+
 				JButton nyTimes = new JButton("Subscribe To NY Times");
 				JButton globeAndMail = new JButton("Subscribe To The Globe And Mail");
 				JButton theDailyMail = new JButton("Subscribe To The Daily Mail");
-				
-				nyTimes.setBounds(100,100,300,50);
-				globeAndMail.setBounds(100,200,300,50);
-				theDailyMail.setBounds(100,300,300,50);
-				
+
+				nyTimes.setBounds(100, 100, 300, 50);
+				globeAndMail.setBounds(100, 200, 300, 50);
+				theDailyMail.setBounds(100, 300, 300, 50);
+
 				newsFrame.add(nyTimes);
 				newsFrame.add(globeAndMail);
 				newsFrame.add(theDailyMail);
-				
+
 				nyTimes.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -500,7 +508,7 @@ public class LandingPage {
 							nyTimesWeb.setEditable(false);
 							JFrame nFrame = new JFrame("NY Times");
 							nFrame.add(new JScrollPane(nyTimesWeb));
-							nFrame.setSize(600,600);
+							nFrame.setSize(600, 600);
 							nFrame.setVisible(true);
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -508,7 +516,6 @@ public class LandingPage {
 					}
 				});
 
-				
 				globeAndMail.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -517,14 +524,14 @@ public class LandingPage {
 							globeWeb.setEditable(false);
 							JFrame nFrame = new JFrame("Washington Post");
 							nFrame.add(new JScrollPane(globeWeb));
-							nFrame.setSize(600,600);
+							nFrame.setSize(600, 600);
 							nFrame.setVisible(true);
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
 					}
 				});
-				
+
 				theDailyMail.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -533,7 +540,7 @@ public class LandingPage {
 							wsWeb.setEditable(false);
 							JFrame nFrame = new JFrame("The Daily Mail");
 							nFrame.add(new JScrollPane(wsWeb));
-							nFrame.setSize(600,600);
+							nFrame.setSize(600, 600);
 							nFrame.setVisible(true);
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -552,14 +559,14 @@ public class LandingPage {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFrame requestFrame = new JFrame("Request A Book.");
-				requestFrame.setSize(500,500);
+				requestFrame.setSize(500, 500);
 				requestFrame.setVisible(true);
 
 				JButton textbook = new JButton("Textbook");
 				JButton self = new JButton("Self-Improvement");
 
-				textbook.setBounds(10,100,150,35);
-				self.setBounds(10,200,150,35);
+				textbook.setBounds(10, 100, 150, 35);
+				self.setBounds(10, 200, 150, 35);
 
 				requestFrame.add(textbook);
 				requestFrame.add(self);
@@ -569,36 +576,38 @@ public class LandingPage {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JFrame textbookFrame = new JFrame("Requested");
-						textbookFrame.setSize(500,500);
+						textbookFrame.setSize(500, 500);
 						textbookFrame.setVisible(true);
 
-						JLabel highPrio = new JLabel("High Priority, One of the following books will be provided shortly.");
-						highPrio.setBounds(10,10,500,30);
+						JLabel highPrio = new JLabel(
+								"High Priority, One of the following books will be provided shortly.");
+						highPrio.setBounds(10, 10, 500, 30);
 						textbookFrame.add(highPrio);
 
-						//Add list of items
+						// Add list of items
 						JList<String[]> highList = new JList(highPrioList);
-						highList.setBounds(100,100,300,300);
+						highList.setBounds(100, 100, 300, 300);
 						textbookFrame.add(highList);
 						textbookFrame.getContentPane().setLayout(null);
 					}
 				});
 
-				//Priority Low
+				// Priority Low
 				self.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JFrame selfFrame = new JFrame("Requested");
-						selfFrame.setSize(500,500);
+						selfFrame.setSize(500, 500);
 						selfFrame.setVisible(true);
 
-						JLabel lowPrio = new JLabel("Low Priority, One of the following books will be provided as soon as possible.");
-						lowPrio.setBounds(10,10,500,30);
+						JLabel lowPrio = new JLabel(
+								"Low Priority, One of the following books will be provided as soon as possible.");
+						lowPrio.setBounds(10, 10, 500, 30);
 						selfFrame.add(lowPrio);
 
-						//Add list of items
+						// Add list of items
 						JList<String[]> lowList = new JList(lowPrioList);
-						lowList.setBounds(100,100,300,300);
+						lowList.setBounds(100, 100, 300, 300);
 						selfFrame.add(lowList);
 						selfFrame.getContentPane().setLayout(null);
 					}
@@ -618,10 +627,9 @@ public class LandingPage {
 		 * storeFrame.setVisible(true); } catch (IOException e1) { e1.printStackTrace();
 		 * } ;
 		 */
-					
-	// Add components based on user type
-	switch(userType)
-		{
+
+		// Add components based on user type
+		switch (userType) {
 		case FACULTY:
 			addFacultyFeatures(panel);
 			break;
@@ -636,101 +644,103 @@ public class LandingPage {
 			break;
 		}
 
-	// Add panel to frame
-	frame.add(panel);
+		// Add panel to frame
+		frame.add(panel);
 	}
 
 	private void addFacultyFeatures(JPanel panel) {
 
-	    // Faculty features label and field
-	    JLabel usernameLabel = new JLabel("Features");
-	    usernameLabel.setBounds(460, 40, 80, 25);
-	    panel.add(usernameLabel);
-	    
-	    // Create a button to open the CoursePage
-	    JButton courseButton = new JButton("Manage Courses");
-	    courseButton.setBounds(400, 60, 160, 30);
-	    panel.add(courseButton);
+		// Faculty features label and field
+		JLabel usernameLabel = new JLabel("Features");
+		usernameLabel.setBounds(460, 40, 80, 25);
+		panel.add(usernameLabel);
 
-	    // Add action listener to the course button
-	    courseButton.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            openCoursePage();
-	        }
-	    });
-	    
-	    // Faculty features label and field
-	    JLabel userCoursesLabel = new JLabel("Your Courses");
-	    userCoursesLabel.setBounds(760, 25, 80, 25);
-	    panel.add(userCoursesLabel);	    
+		// Create a button to open the CoursePage
+		JButton courseButton = new JButton("Manage Courses");
+		courseButton.setBounds(400, 60, 160, 30);
+		panel.add(courseButton);
 
-	    // Retrieve course codes associated with the faculty user
-	    ArrayList<String> facultyCourseCodes = new ArrayList<>();
-	    try {
-	        ArrayList<String[]> userCourseConnections = MaintainUserCourse.load();
-	        for (String[] connection : userCourseConnections) {
-	            if (connection[0].equals(String.valueOf(currentUser.getId()))) {
-	                facultyCourseCodes.add(connection[1]);
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(panel, "Error loading user-course connections.", "Error", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
+		// Add action listener to the course button
+		courseButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openCoursePage();
+			}
+		});
 
-	    // Use HashSet to ensure each course is displayed only once
-	    HashSet<String> uniqueCourseCodes = new HashSet<>(facultyCourseCodes);
+		// Faculty features label and field
+		JLabel userCoursesLabel = new JLabel("Your Courses");
+		userCoursesLabel.setBounds(760, 25, 80, 25);
+		panel.add(userCoursesLabel);
 
-	    // Create a JTextArea to display courses and associated items
-	    JTextArea courseTextArea = new JTextArea();
-	    courseTextArea.setEditable(false);
+		// Retrieve course codes associated with the faculty user
+		ArrayList<String> facultyCourseCodes = new ArrayList<>();
+		try {
+			ArrayList<String[]> userCourseConnections = MaintainUserCourse.load();
+			for (String[] connection : userCourseConnections) {
+				if (connection[0].equals(String.valueOf(currentUser.getId()))) {
+					facultyCourseCodes.add(connection[1]);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(panel, "Error loading user-course connections.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
-	    // Retrieve and display associated items for each unique course
-	    for (String courseCode : uniqueCourseCodes) {
-	        courseTextArea.append("Course: " + courseCode + "\n");
-	        ArrayList<String> associatedItems = new ArrayList<>();
-	        try {
-	            ArrayList<String[]> courseItemConnections = MaintainCourseItem.load();
-	            for (String[] connection : courseItemConnections) {
-	                if (connection[0].equals(courseCode)) {
-	                    associatedItems.add(connection[1]);
-	                }
-	            }
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	            JOptionPane.showMessageDialog(panel, "Error loading course-item connections.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
+		// Use HashSet to ensure each course is displayed only once
+		HashSet<String> uniqueCourseCodes = new HashSet<>(facultyCourseCodes);
 
-	        if (!associatedItems.isEmpty()) {
-	            courseTextArea.append("Textbooks:\n");
-	            for (String itemId : associatedItems) {
-	                String itemName = null;
-	                try {
-	                    itemName = MaintainInventory.retrieveItemNameById(itemId);
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                    JOptionPane.showMessageDialog(panel, "Error retrieving item name.", "Error", JOptionPane.ERROR_MESSAGE);
-	                }
+		// Create a JTextArea to display courses and associated items
+		JTextArea courseTextArea = new JTextArea();
+		courseTextArea.setEditable(false);
 
-	                if (itemName != null) {
-	                    courseTextArea.append("- " + itemName + "\n");
-	                } else {
-	                    System.out.println("Item not found for ID: " + itemId);
-	                }
-	            }
-	        }
-	        courseTextArea.append("\n");
-	    }
+		// Retrieve and display associated items for each unique course
+		for (String courseCode : uniqueCourseCodes) {
+			courseTextArea.append("Course: " + courseCode + "\n");
+			ArrayList<String> associatedItems = new ArrayList<>();
+			try {
+				ArrayList<String[]> courseItemConnections = MaintainCourseItem.load();
+				for (String[] connection : courseItemConnections) {
+					if (connection[0].equals(courseCode)) {
+						associatedItems.add(connection[1]);
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(panel, "Error loading course-item connections.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 
-	    // Create a JScrollPane and add the JTextArea to it
-	    JScrollPane scrollPane = new JScrollPane(courseTextArea);
-	    scrollPane.setBounds(750, 60, 350, 100); // Adjusted bounds
-	    panel.add(scrollPane);
+			if (!associatedItems.isEmpty()) {
+				courseTextArea.append("Textbooks:\n");
+				for (String itemId : associatedItems) {
+					String itemName = null;
+					try {
+						itemName = MaintainInventory.retrieveItemNameById(itemId);
+					} catch (IOException e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(panel, "Error retrieving item name.", "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+
+					if (itemName != null) {
+						courseTextArea.append("- " + itemName + "\n");
+					} else {
+						System.out.println("Item not found for ID: " + itemId);
+					}
+				}
+			}
+			courseTextArea.append("\n");
+		}
+
+		// Create a JScrollPane and add the JTextArea to it
+		JScrollPane scrollPane = new JScrollPane(courseTextArea);
+		scrollPane.setBounds(750, 60, 350, 100); // Adjusted bounds
+		panel.add(scrollPane);
 	}
-
 
 	// Method to open the CoursePage
 	private void openCoursePage() {
@@ -817,6 +827,45 @@ public class LandingPage {
 						courseInfo.append("Professor: ").append(selectedCourse.getProfessor()).append("\n");
 						courseInfo.append("Email: ").append(selectedCourse.getEmail()).append("\n");
 						courseInfo.append("Location: ").append(selectedCourse.getLocation()).append("\n");
+						courseInfo.append("Textbooks:\n");
+
+						// Retrieve and display associated item names for the selected course
+						ArrayList<String> associatedItems = new ArrayList<>();
+						try {
+							ArrayList<String[]> courseItemConnections = MaintainCourseItem.load();
+							for (String[] connection : courseItemConnections) {
+								if (connection[0].equals(selectedCourse.getCourseCode())) {
+									associatedItems.add(connection[1]);
+								}
+							}
+						} catch (IOException ex) {
+							ex.printStackTrace();
+							JOptionPane.showMessageDialog(panel, "Error loading course-item connections.", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+
+						if (!associatedItems.isEmpty()) {
+							for (String itemId : associatedItems) {
+								String itemName = null;
+								try {
+									itemName = MaintainInventory.retrieveItemNameById(itemId);
+								} catch (IOException ex) {
+									ex.printStackTrace();
+									JOptionPane.showMessageDialog(panel, "Error retrieving item name.", "Error",
+											JOptionPane.ERROR_MESSAGE);
+								}
+
+								if (itemName != null) {
+									courseInfo.append("- ").append(itemName).append("\n");
+								} else {
+									System.out.println("Item not found for ID: " + itemId);
+								}
+							}
+						} else {
+							courseInfo.append("- No associated items found\n");
+						}
+
 						courseInfoTextArea.setText(courseInfo.toString());
 					} else {
 						courseInfoTextArea.setText("No information available for selected course.");
@@ -826,11 +875,93 @@ public class LandingPage {
 				}
 			}
 		});
+
+		// Button to view textbook
+		JButton viewTextbookButton = new JButton("View Textbook");
+		viewTextbookButton.setBounds(400, 140, 160, 30);
+		panel.add(viewTextbookButton);
+
+		// Action listener for the view textbook button
+		viewTextbookButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Get the selected course
+				String selectedCourseName = (String) courseComboBox.getSelectedItem();
+				if (selectedCourseName != null) {
+					Course selectedCourse = null;
+					// Find the selected course from the list of connected courses
+					for (Course course : connectedCourses) {
+						if (course.getCourseName().equals(selectedCourseName)) {
+							selectedCourse = course;
+							break;
+						}
+					}
+					// Open a new window to view textbooks
+					if (selectedCourse != null) {
+						// Create and configure the new window
+						JFrame textbookFrame = new JFrame("View Textbooks for " + selectedCourse.getCourseName());
+						textbookFrame.setSize(500, 300);
+						textbookFrame.setLocationRelativeTo(null);
+						textbookFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+						// Create text area to display textbooks
+						JTextArea textbookTextArea = new JTextArea();
+						textbookTextArea.setEditable(false);
+
+						// Retrieve and display associated textbooks
+						ArrayList<String> associatedItems = new ArrayList<>();
+						try {
+							ArrayList<String[]> courseItemConnections = MaintainCourseItem.load();
+							for (String[] connection : courseItemConnections) {
+								if (connection[0].equals(selectedCourse.getCourseCode())) {
+									associatedItems.add(connection[1]);
+								}
+							}
+						} catch (IOException ex) {
+							ex.printStackTrace();
+							JOptionPane.showMessageDialog(panel, "Error loading course-item connections.", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+
+						if (!associatedItems.isEmpty()) {
+							textbookTextArea.append("Textbooks for " + selectedCourse.getCourseName() + ":\n");
+							for (String itemId : associatedItems) {
+								String itemName = null;
+								try {
+									itemName = MaintainInventory.retrieveItemNameById(itemId);
+								} catch (IOException ex) {
+									ex.printStackTrace();
+									JOptionPane.showMessageDialog(panel, "Error retrieving item name.", "Error",
+											JOptionPane.ERROR_MESSAGE);
+								}
+
+								if (itemName != null) {
+									textbookTextArea.append("- " + itemName + "\n");
+								} else {
+									System.out.println("Item not found for ID: " + itemId);
+								}
+							}
+						} else {
+							textbookTextArea.append("No textbooks found for " + selectedCourse.getCourseName());
+						}
+
+						// Add text area to the frame
+						textbookFrame.add(new JScrollPane(textbookTextArea));
+						textbookFrame.setVisible(true);
+					} else {
+						JOptionPane.showMessageDialog(panel, "Please select a course.", "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
 	}
 
 	private void addGuestFeatures(JPanel panel) {
 
 	}
+
 	private int differenceDays(String dueDate) {
 		Date today = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
