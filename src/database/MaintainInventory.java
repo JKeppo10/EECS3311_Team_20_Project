@@ -84,6 +84,21 @@ public class MaintainInventory {
     	    System.out.println("Item with the provided ID does not exist.");
     	  }
     	}
+    
+    public static String retrieveItemNameById(String itemId) throws IOException {
+        // Load inventory
+        ArrayList<Item> inventory = load();
+
+        // Search for the item with the given ID
+        for (Item item : inventory) {
+            if (String.valueOf(item.getUniqueId()).equals(itemId)) {
+                return item.getName(); // Return the item name if found
+            }
+        }
+
+        // Return null if no item found with the given ID
+        return null;
+    }
 
     // test
     public static void main(String[] args) throws IOException {

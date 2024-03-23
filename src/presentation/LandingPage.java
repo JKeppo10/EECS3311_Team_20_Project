@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 import java.awt.event.ActionEvent;
 
@@ -512,24 +513,19 @@ public class LandingPage {
 				newsFrame.getContentPane().setLayout(null);
 			}
 		});
-	//store UI
-		JButton bookStore = new JButton("Visit Store");
-		bookStore.setBounds(100,100,300,50);
-		//Frame.add(bookStore);
-		store.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							JEditorPane storeWeb = new JEditorPane("Yorku Store");
-							storeWeb.setEditable(false);
-							JFrame storeFrame = new JFrame("Store");
-							storeFrame.add(new JScrollPane(storeWeb));
-							storeFrame.setSize(600,600);
-							storeFrame.setVisible(true);
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-					}
+		/*
+		 * //store UI JButton bookStore = new JButton("Visit Store");
+		 * bookStore.setBounds(100,100,300,50); //Frame.add(bookStore);
+		 * //store.addActionListener(new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent e) { try { JEditorPane
+		 * storeWeb = new JEditorPane("Yorku Store"); storeWeb.setEditable(false);
+		 * JFrame storeFrame = new JFrame("Store"); storeFrame.add(new
+		 * JScrollPane(storeWeb)); storeFrame.setSize(600, 600);
+		 * storeFrame.setVisible(true); } catch (IOException e1) { e1.printStackTrace();
+		 * } ;
+		 */
+					
 	// Add components based on user type
 	switch(userType)
 		{
@@ -553,23 +549,95 @@ public class LandingPage {
 
 	private void addFacultyFeatures(JPanel panel) {
 
-		// Faculty features label and field
-		JLabel usernameLabel = new JLabel("Features");
-		usernameLabel.setBounds(460, 40, 80, 25);
-		panel.add(usernameLabel);
-		// Create a button to open the CoursePage
-		JButton courseButton = new JButton("Manage Courses");
-		courseButton.setBounds(400, 60, 160, 30);
-		panel.add(courseButton);
+	    // Faculty features label and field
+	    JLabel usernameLabel = new JLabel("Features");
+	    usernameLabel.setBounds(460, 40, 80, 25);
+	    panel.add(usernameLabel);
+	    
+	    // Create a button to open the CoursePage
+	    JButton courseButton = new JButton("Manage Courses");
+	    courseButton.setBounds(400, 60, 160, 30);
+	    panel.add(courseButton);
 
-		// Add action listener to the course button
-		courseButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openCoursePage();
-			}
-		});
+	    // Add action listener to the course button
+	    courseButton.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            openCoursePage();
+	        }
+	    });
+	    
+	    // Faculty features label and field
+	    JLabel userCoursesLabel = new JLabel("Your Courses");
+	    userCoursesLabel.setBounds(760, 25, 80, 25);
+	    panel.add(userCoursesLabel);	    
+
+	    // Retrieve course codes associated with the faculty user
+	    ArrayList<String> facultyCourseCodes = new ArrayList<>();
+	    try {
+	        ArrayList<String[]> userCourseConnections = MaintainUserCourse.load();
+	        for (String[] connection : userCourseConnections) {
+	            if (connection[0].equals(String.valueOf(currentUser.getId()))) {
+	                facultyCourseCodes.add(connection[1]);
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(panel, "Error loading user-course connections.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    // Use HashSet to ensure each course is displayed only once
+	    HashSet<String> uniqueCourseCodes = new HashSet<>(facultyCourseCodes);
+
+	    // Create a JTextArea to display courses and associated items
+	    JTextArea courseTextArea = new JTextArea();
+	    courseTextArea.setEditable(false);
+
+	    // Retrieve and display associated items for each unique course
+	    for (String courseCode : uniqueCourseCodes) {
+	        courseTextArea.append("Course: " + courseCode + "\n");
+	        ArrayList<String> associatedItems = new ArrayList<>();
+	        try {
+	            ArrayList<String[]> courseItemConnections = MaintainCourseItem.load();
+	            for (String[] connection : courseItemConnections) {
+	                if (connection[0].equals(courseCode)) {
+	                    associatedItems.add(connection[1]);
+	                }
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            JOptionPane.showMessageDialog(panel, "Error loading course-item connections.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+
+	        if (!associatedItems.isEmpty()) {
+	            courseTextArea.append("Textbooks:\n");
+	            for (String itemId : associatedItems) {
+	                String itemName = null;
+	                try {
+	                    itemName = MaintainInventory.retrieveItemNameById(itemId);
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                    JOptionPane.showMessageDialog(panel, "Error retrieving item name.", "Error", JOptionPane.ERROR_MESSAGE);
+	                }
+
+	                if (itemName != null) {
+	                    courseTextArea.append("- " + itemName + "\n");
+	                } else {
+	                    System.out.println("Item not found for ID: " + itemId);
+	                }
+	            }
+	        }
+	        courseTextArea.append("\n");
+	    }
+
+	    // Create a JScrollPane and add the JTextArea to it
+	    JScrollPane scrollPane = new JScrollPane(courseTextArea);
+	    scrollPane.setBounds(750, 60, 350, 100); // Adjusted bounds
+	    panel.add(scrollPane);
 	}
+
 
 	// Method to open the CoursePage
 	private void openCoursePage() {
