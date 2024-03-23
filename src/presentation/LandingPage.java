@@ -514,7 +514,8 @@ public class LandingPage {
 		});
 	//store UI
 		JButton bookStore = new JButton("Visit Store");
-		
+		bookStore.setBounds(100,100,300,50);
+		//Frame.add(bookStore);
 		store.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
