@@ -10,14 +10,14 @@ import businessLogic.Items.*;
 
 public class MaintainInventory {
 
-    private static final String path = "C:\\Users\\keppo\\Documents\\GitHub\\EECS3311_Team_20_Project\\CSVs\\inventory.csv";
+    private static final String path = "Path";
     
     public static ArrayList<String[]> loadString() throws IOException {
         ArrayList<String[]> inventory = new ArrayList<>();
         CsvReader reader = new CsvReader(path);
         reader.readHeaders();
         while (reader.readRecord()) {
-            String[] item = { reader.get("itemname"), reader.get("itemID"), reader.get("numCopies"), reader.get("location"), reader.get("online"), reader.get("purchasable") };
+            String[] item = { reader.get("itemname"), reader.get("itemID"), reader.get("numCopies"), reader.get("location"), reader.get("online"), reader.get("purchasable"), reader.get("type") };
             inventory.add(item);
         }
         reader.close();
@@ -29,13 +29,26 @@ public class MaintainInventory {
         CsvReader reader = new CsvReader(path);
         reader.readHeaders();
         while (reader.readRecord()) {
-        	Item item = new Item(reader.get("itemname"), Integer.parseInt(reader.get("itemID")),Integer.parseInt(reader.get("numCopies")), reader.get("location"), Boolean.parseBoolean(reader.get("online")), Boolean.parseBoolean(reader.get("purchasable")));
+        	Item item = new Item(reader.get("itemname"), Integer.parseInt(reader.get("itemID")),Integer.parseInt(reader.get("numCopies")), reader.get("location"), Boolean.parseBoolean(reader.get("online")), Boolean.parseBoolean(reader.get("purchasable")), reader.get("type"));
         	inventory.add(item);
         }
         reader.close();
         return inventory;
     }
+    public static String retrieveItemNameById(String itemId) throws IOException {
+        // Load inventory
+        ArrayList<Item> inventory = load();
 
+        // Search for the item with the given ID
+        for (Item item : inventory) {
+            if (String.valueOf(item.getUniqueId()).equals(itemId)) {
+                return item.getName(); // Return the item name if found
+            }
+        }
+
+        // Return null if no item found with the given ID
+        return null;
+    }
     public static void update(ArrayList<Item> inventory) throws IOException {
     	  CsvWriter writer = new CsvWriter(new FileWriter(path), ',');
 
@@ -84,21 +97,6 @@ public class MaintainInventory {
     	    System.out.println("Item with the provided ID does not exist.");
     	  }
     	}
-    
-    public static String retrieveItemNameById(String itemId) throws IOException {
-        // Load inventory
-        ArrayList<Item> inventory = load();
-
-        // Search for the item with the given ID
-        for (Item item : inventory) {
-            if (String.valueOf(item.getUniqueId()).equals(itemId)) {
-                return item.getName(); // Return the item name if found
-            }
-        }
-
-        // Return null if no item found with the given ID
-        return null;
-    }
 
     // test
     public static void main(String[] args) throws IOException {
@@ -111,10 +109,10 @@ public class MaintainInventory {
         	}
 
         // Add a new item
-        addItem(new Item("New Item", 101, 10, "Library", Boolean.parseBoolean("true"), Boolean.parseBoolean("false")));
+        addItem(new Item("New Item", 101, 10, "Library", Boolean.parseBoolean("true"), Boolean.parseBoolean("false"), "Textbook"));
 
         // Attempt to add existing item
-        addItem(new Item("History of Canada", 1, 20, "1001", Boolean.parseBoolean("true"),Boolean.parseBoolean("true")));
+        addItem(new Item("History of Canada", 1, 20, "1001", Boolean.parseBoolean("true"),Boolean.parseBoolean("true"), "Textbook"));
 
         // Remove an existing item
         removeItem(1);
