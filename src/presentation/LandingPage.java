@@ -437,7 +437,37 @@ public class LandingPage {
 		        }
 		    }
 		});
-		
+		// Logic To Get List
+				int currUserID = currentUser.getId();
+		        ArrayList<String[]> itemIDs = new ArrayList<String[]>();
+		        ArrayList<String[]> inventory = new ArrayList<String[]>();
+		        ArrayList<String[]> users = new ArrayList<String[]>();
+		        try {
+		             users = MaintainUser.loadString();
+					 itemIDs = MaintainUserItems.load();
+					 inventory = MaintainInventory.loadString();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+		        ArrayList<String> highPrioListX = new ArrayList<String>();
+		        ArrayList<String> lowPrioListX = new ArrayList<String>();
+		        
+		        for(int i = 0; i < inventory.size(); i++) {
+		        	if(inventory.get(i)[6].toLowerCase().equals("textbook")) {
+		        		highPrioListX.add(inventory.get(i)[0]);
+		        	}
+		        	else {
+		        		lowPrioListX.add(inventory.get(i)[0]);
+		        	}
+		        }
+		        String[] highPrioList = new String[highPrioListX.size()];
+		        String[] lowPrioList = new String[lowPrioListX.size()];
+		        for(int i = 0; i < highPrioListX.size(); i++) {
+		        	highPrioList[i] = highPrioListX.get(i);
+		        }
+		        for(int i = 0; i < lowPrioListX.size(); i++) {
+		        	lowPrioList[i] = lowPrioListX.get(i);
+		        }
 		//Newsletter Button
 		JButton newsletter = new JButton("Newsletter Subscriptions");
 		newsletter.setBounds(10, 500, 200, 30);
@@ -511,6 +541,69 @@ public class LandingPage {
 					}
 				});
 				newsFrame.getContentPane().setLayout(null);
+			}
+		});
+		// Request New Book
+		JButton requestNew = new JButton("Request New Book");
+		requestNew.setBounds(10, 550, 200, 30);
+		panel.add(requestNew);
+
+		requestNew.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame requestFrame = new JFrame("Request A Book.");
+				requestFrame.setSize(500,500);
+				requestFrame.setVisible(true);
+
+				JButton textbook = new JButton("Textbook");
+				JButton self = new JButton("Self-Improvement");
+
+				textbook.setBounds(10,100,150,35);
+				self.setBounds(10,200,150,35);
+
+				requestFrame.add(textbook);
+				requestFrame.add(self);
+
+				// Priority High, Show Books + Display Priority Text
+				textbook.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame textbookFrame = new JFrame("Requested");
+						textbookFrame.setSize(500,500);
+						textbookFrame.setVisible(true);
+
+						JLabel highPrio = new JLabel("High Priority, One of the following books will be provided shortly.");
+						highPrio.setBounds(10,10,500,30);
+						textbookFrame.add(highPrio);
+
+						//Add list of items
+						JList<String[]> highList = new JList(highPrioList);
+						highList.setBounds(100,100,300,300);
+						textbookFrame.add(highList);
+						textbookFrame.getContentPane().setLayout(null);
+					}
+				});
+
+				//Priority Low
+				self.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JFrame selfFrame = new JFrame("Requested");
+						selfFrame.setSize(500,500);
+						selfFrame.setVisible(true);
+
+						JLabel lowPrio = new JLabel("Low Priority, One of the following books will be provided as soon as possible.");
+						lowPrio.setBounds(10,10,500,30);
+						selfFrame.add(lowPrio);
+
+						//Add list of items
+						JList<String[]> lowList = new JList(lowPrioList);
+						lowList.setBounds(100,100,300,300);
+						selfFrame.add(lowList);
+						selfFrame.getContentPane().setLayout(null);
+					}
+				});
+				requestFrame.getContentPane().setLayout(null);
 			}
 		});
 		/*
