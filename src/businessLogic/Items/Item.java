@@ -8,19 +8,21 @@ public class Item {
 	private boolean online;
 	private int uniqueId;
 	private String location;
-	boolean purchasable;
+	private boolean purchasable;
+	private String type;
 
 	public Item() {
 
 	}
 
-	public Item(String name, int uniqueId, int numCopies, String location, boolean online, boolean purchasable) {
+	public Item(String name, int uniqueId, int numCopies, String location, boolean online, boolean purchasable, String type) {
 		this.name = name;
 		this.numCopies = numCopies;
 		this.online = online;
 		this.uniqueId = uniqueId;
 		this.location = location;
 		this.purchasable = purchasable;
+		this.type = type;
 	}
 
 	public void setName(String name) {

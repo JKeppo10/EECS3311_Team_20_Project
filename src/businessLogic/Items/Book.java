@@ -2,19 +2,14 @@ package businessLogic.Items;
 
 public class Book extends Item {
 
-  private String requestType;
   private String priority;
 
   private Book(String name, int uniqueId, int numCopies, String location, boolean online, boolean purchasable, String requestType, String priority) {
-    super(name, uniqueId, numCopies, location, online, purchasable);
-    this.requestType = requestType;
+    super(name, uniqueId, numCopies, location, online, purchasable, requestType);
     this.priority = priority;
   }
 
   // Accessor methods (optional)
-  public String getRequestType() {
-    return requestType;
-  }
 
   public String getPriority() {
     return priority;
