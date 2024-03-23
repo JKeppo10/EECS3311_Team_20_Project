@@ -1,0 +1,5 @@
+itemname,itemID,numCopies,location,online,purchasable,price
+Intro to C (SALE),4,20,1001,TRUE,TRUE,86.00
+Intro to Java (SALE),5,20,1002,TRUE,TRUE,99.00
+Intro to Python (SALE),6,20,1003,TRUE,TRUE,80.00
+Circuit Design (SALE),7,20,1004,TRUE,TRUE,190.00

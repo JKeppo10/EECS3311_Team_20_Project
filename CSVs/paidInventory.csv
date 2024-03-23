@@ -1,0 +1,5 @@
+itemname,itemID,numCopies,location,online,purchasable,price
+Gym Workouts,8,20,1001,TRUE,TRUE,50.00
+Intro to Linear Algebra,9,20,1002,TRUE,TRUE,120.00
+CompSci Magazine,10,20,1003,TRUE,TRUE,10.00
+Boolean Semantics,11,20,1004,TRUE,TRUE,100.00
