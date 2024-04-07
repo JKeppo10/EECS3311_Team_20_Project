@@ -69,7 +69,42 @@ String name2 = a2.getName();
 AssertEquals("studentName", name2);
 }
 
-  //Guest Testing
+@Test
+//test Builder design pattern
+public void testStudentBuilder() {
+Student student = new Student.Builder()
+.name("Alice Johnson")
+.pw("student123")
+.email("alice@example.com")
+.id(67890)
+.numRent(3)
+.build();
+
+assertEquals("Alice Johnson", student.getName());
+assertEquals("student123", student.getPw());
+assertEquals("alice@example.com", student.getEmail());
+assertEquals(67890, student.getId());
+assertEquals(UserTypes.STUDENT, student.getUserType());
+assertEquals(3, student.getNumRent().intValue());
+}
+
+@Test
+    //Test builder for default fill-in values
+public void testStudentMissingVal() {
+Student student = new Student.Builder()
+.name("Bob Smith")
+.pw("student456")
+.id(98765)
+.build();
+
+assertEquals("Bob Smith", student.getName());
+assertEquals("student456", student.getPw());
+assertEquals(null, student.getEmail()); // Assuming email can be null
+assertEquals(98765, student.getId());
+assertEquals(UserTypes.STUDENT, student.getUserType());
+assertEquals(null, student.getNumRent()); // Assuming numRent can be null
+}
+//Guest Testing
 @Test
 public void test4(){
   //test accessors
