@@ -159,4 +159,40 @@ String name4 = a4.getName();
 AssertEquals("nonFacName", name4);
 }
   
+@Test
+  //test builder design pattern
+public void testNonFacultyBuilder() {
+ NonFaculty nonFaculty = new NonFaculty.Builder()
+.name("Alice Johnson")
+.pw("nonfaculty123")
+.email("alice@example.com")
+.id(12345)
+.numRent(2)
+.build();
+
+assertEquals("Alice Johnson", nonFaculty.getName());
+assertEquals("nonfaculty123", nonFaculty.getPw());
+assertEquals("alice@example.com", nonFaculty.getEmail());
+assertEquals(12345, nonFaculty.getId());
+assertEquals(UserTypes.NON_FACULTY, nonFaculty.getUserType());
+assertEquals(2, nonFaculty.getNumRent().intValue());
+}
+
+@Test
+  //for missing/default values
+public void testNonFacultyMissingVal() {
+NonFaculty nonFaculty = new NonFaculty.Builder()
+.name("Bob Smith")
+.pw("nonfaculty456")
+.id(54321)
+.build();
+
+assertEquals("Bob Smith", nonFaculty.getName());
+assertEquals("nonfaculty456", nonFaculty.getPw());
+assertEquals(null, nonFaculty.getEmail()); // Assuming email can be null
+assertEquals(54321, nonFaculty.getId());
+assertEquals(UserTypes.NON_FACULTY, nonFaculty.getUserType());
+assertEquals(null, nonFaculty.getNumRent()); // Assuming numRent can be null
+}
+  
 }
