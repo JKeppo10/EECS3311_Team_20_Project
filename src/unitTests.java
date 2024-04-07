@@ -113,6 +113,41 @@ Builder name("guestName");
 String name3 = a3.getName();
 AssertEquals("guestName", name3);
 }
+    @Test
+  //test builder design pattern
+public void testGuestBuilder() {
+Guest guest = new Guest.Builder()
+.name("Alice Johnson")
+.pw("guest123")
+.email("alice@example.com")
+.id(12345)
+.numRent(2)
+.build();
+
+assertEquals("Alice Johnson", guest.getName());
+assertEquals("guest123", guest.getPw());
+assertEquals("alice@example.com", guest.getEmail());
+assertEquals(12345, guest.getId());
+assertEquals(UserTypes.GUEST, guest.getUserType());
+assertEquals(2, guest.getNumRent().intValue());
+}
+
+@Test
+  //for default/missing values
+public void testGuestMissingVal() {
+Guest guest = new Guest.Builder()
+.name("Bob Smith")
+.pw("guest456")
+.id(54321)
+.build();
+
+assertEquals("Bob Smith", guest.getName());
+assertEquals("guest456", guest.getPw());
+assertEquals(null, guest.getEmail()); // Assuming email can be null
+assertEquals(54321, guest.getId());
+assertEquals(UserTypes.GUEST, guest.getUserType());
+assertEquals(null, guest.getNumRent()); // Assuming numRent can be null
+}
 
   //NonFac Testing
   @Test
