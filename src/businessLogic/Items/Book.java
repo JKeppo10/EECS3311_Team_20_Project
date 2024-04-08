@@ -14,7 +14,28 @@ public class Book extends Item {
   public String getPriority() {
     return priority;
   }
-
+  public String getTitle(){
+    return name;
+  }
+  public int getuniqueId(){
+    return uniqueId;
+  }
+  public int getnumCopies(){
+    return numCopies;
+  }
+  public String getlocation(){
+    return location;
+  }
+  public Boolean getonline(){
+    return online;
+  }
+  public Boolean getpurchasable(){
+    return purchasable;
+  }
+  public String getrequestType(){
+    return requestType;
+  }
+  
   // Inner builder class (updated)
   public static class Builder {
     private String title;

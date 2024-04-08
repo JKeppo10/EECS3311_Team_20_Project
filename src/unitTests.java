@@ -3,6 +3,8 @@ package src;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.beans.Transient;
+
 import businessLogic.Users.User;
 import businessLogic.Users.Faculty;
 import businessLogic.Users.Student;
@@ -10,6 +12,11 @@ import businessLogic.Users.Guest;
 import businessLogic.Users.NonFaculty;
 import businessLogic.Users.UserTypes;
 import businessLogic.Users.Faculty.Builder;
+import businessLogic.Item.Item;
+import businessLogic.Item.Book;
+import businessLogic.Item.Cd;
+import businessLogic.Item.Dvd;
+
 
 public class UnitTests {
 
@@ -236,4 +243,20 @@ public class UnitTests {
         assertEquals(null, nonFaculty.getNumRent()); // Assuming numRent can be null
     }
 
+    // Book Testing
+    @Test
+    public void test6(){
+        // test accessors
+        Item a5 = new Book.Builder().title("Intro to Coding").uniqueId(2323).numCopies(10).location("12B")
+            .online(true).purchasable(true).requestType("Rent").priority("Second").build();
+
+        assertEquals("Intro to Coding", Book.getTitle());
+        assertEquals(2323, Book.get.uniqueId());
+        assertEquals(10, Book.getnumCopies());
+        assertEquals("12B", Book.getlocation());
+        assertEquals(true, Book.getonline());
+        assertEquals(true, Book.getpurchasable());
+        assertEquals("Rent", Book.getreuestType());
+        assertEquals("Second", Book.getPriority());
+    }
 }
