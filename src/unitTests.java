@@ -57,8 +57,64 @@ assertEquals(54321, faculty.getId());
 assertEquals(UserTypes.FACULTY, faculty.getUserType());
 assertEquals(null, faculty.getNumRent()); // Assuming numRent can be null
 }
+//test the overall Faculty creation and the factory user type. eg. FACULTY enum
+@Test
+public void testUserType() {
+Faculty faculty = new Faculty.Builder()
+.name("John Doe")
+.pw("password123")
+.id(1001)
+.email("john.doe@example.com")
+.numRent(5)
+.build();
 
+assertEquals(UserTypes.FACULTY, faculty.getUserType());
+}
+//testing creation of multiple Faculty users with unique IDs
+  @Test
+public void testMultipleFacultyMembers() {
+Faculty faculty1 = new Faculty.Builder()
+.name("John Doe")
+.pw("password123")
+.id(1001)
+.email("john.doe@example.com")
+.numRent(5)
+.build();
+                                
+Faculty faculty2 = new Faculty.Builder()
+.name("Jane Doe")
+.pw("password456")
+.id(1002)
+.email("jane.doe@example.com")
+.numRent(3)
+.build();
+assertNotEquals(faculty1.getId(), faculty2.getId());
+}
 
+//Error Testing
+  @Test
+  //test for unexpected numerical values. Eg. negative number of rented items
+public void testFacultyRentError() {
+new Faculty.Builder()
+.name("John Doe")
+.pw("password123")
+.id(1001)
+.email("john.doe@example.com")
+.numRent(-5)
+.build();
+} //should throw IllegalArgumentException
+
+  //testing for if user does not enter anything for email (null is placed instead). Expecting NullPointerException
+@Test
+public void testNullEmail() {
+new Faculty.Builder()
+.name("John Doe")
+.pw("password123")
+.id(1001)
+.email(null)
+.numRent(5)
+.build();
+}
   //Student Testing
 @Test
 public void test3(){
