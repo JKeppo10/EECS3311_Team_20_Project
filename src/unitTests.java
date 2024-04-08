@@ -1,5 +1,14 @@
 package src;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
+import businessLogic.Users.User;
+import businessLogic.Users.Faculty;
+import businessLogic.Users.Student;
+import businessLogic.Users.Guest;
+import businessLogic.Users.NonFaculty;
+import businessLogic.Users.UserTypes;
+import businessLogic.Users.Faculty.Builder;
 public class unitTests{
 
 //unit Tests for Users
