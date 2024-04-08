@@ -133,7 +133,33 @@ public class UnitTests {
         assertEquals(UserTypes.STUDENT, student.getUserType());
         assertEquals(null, student.getNumRent()); // Assuming numRent can be null
     }
+     // testing creation of multiple Student users with unique IDs
+    @Test
+    public void testMultipleStudentMembers() {
+        Faculty student1 = new Student.Builder().name("John Doe").pw("password123").id(1001)
+                .email("john.doe@example.com").numRent(5).build();
 
+        Faculty student2 = new Student.Builder().name("Jane Doe").pw("password456").id(1002)
+                .email("jane.doe@example.com").numRent(3).build();
+        assertNotEquals(student1.getId(), student2.getId());
+    }
+    
+    // Error Testing
+    @Test(expected = IllegalArgumentException.class)
+    // test for unexpected numerical values. Eg. negative number of rented items
+    public void testStudentRentError() {
+        new Student.Builder().name("John Doe").pw("password123").id(1001).email("john.doe@example.com").numRent(-5)
+                .build();
+    } // should throw IllegalArgumentException
+
+    // testing for if user does not enter anything for email (null is placed
+    // instead). Expecting NullPointerException
+    @Test(expected = NullPointerException.class)
+    public void testNullEmail2() {
+        new Student.Builder().name("John Doe").pw("password123").id(1001).email(null).numRent(5).build();
+    }
+
+    
     // Guest Testing
     @Test
     public void test4() {
