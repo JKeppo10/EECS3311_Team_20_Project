@@ -16,6 +16,8 @@ import businessLogic.Item.Item;
 import businessLogic.Item.Book;
 import businessLogic.Item.Cd;
 import businessLogic.Item.Dvd;
+import businessLogic.Misc.Course;
+import businessLogic.Misc.Newsletter;
 
 
 public class UnitTests {
@@ -243,6 +245,7 @@ public class UnitTests {
         assertEquals(null, nonFaculty.getNumRent()); // Assuming numRent can be null
     }
 
+    // Unit test for Item
     // Book Testing
     @Test
     public void test6(){
@@ -258,5 +261,36 @@ public class UnitTests {
         assertEquals(true, Book.getpurchasable());
         assertEquals("Rent", Book.getreuestType());
         assertEquals("Second", Book.getPriority());
+    }
+
+    // Unitests for Misc
+    // Courses Testing
+    @Test
+    public void test7(){
+        // test accessors
+        Misc a5 = new Course("3311","Software Development","Song Wang","wangsong@gmail.com","DB");
+
+        assertEquals("3311", Course.getCourseCode());
+        assertEquals("Software Development", Course.getCourseName());
+        assertEquals("Song Wang", Course.getProfessor());
+        assertEquals("wangsong@gmail.com", Course.getEmail());
+        assertEquals("DB", Course.getLocation());
+    }
+    
+    // Courses Testing
+    @Test
+    public void test8(){
+        // test accessors and mutators
+        Misc a5 = new Course("3311","Software Development","Song Wang","wangsong@gmail.com","DB");
+        a5.setCourseCode("3221");
+        a5.setCourseCode("Operating System");
+        a5.setCourseCode("John Doe");
+        a5.setCourseCode("johndoe@yorku.ca");
+        a5.setCourseCode("LSB");
+        assertEquals("3221", Course.getCourseCode());
+        assertEquals("Operating System", Course.getCourseName());
+        assertEquals("John Doe", Course.getProfessor());
+        assertEquals("johndoe@yorku.ca", Course.getEmail());
+        assertEquals("LSB", Course.getLocation());
     }
 }
